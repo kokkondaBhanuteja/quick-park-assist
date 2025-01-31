@@ -37,7 +37,6 @@ The **Java Quick Park Assist** project is a smart parking system designed to pro
 ## Technologies Used
 ### Backend:
 -  Java : Version 17 
--  SPRING.IO
 -  MySQL: Version 8.0.32
 -  Spring Boot Data JPA: Version 3.4.2
 -  Spring Boot REST Services: Version 3.4.2
@@ -46,7 +45,6 @@ The **Java Quick Park Assist** project is a smart parking system designed to pro
 -  Swagger: Version
 ### Frontend:
 -  Thymeleaf: Version 3.1.3.RELEASE 
--  THYMELEAF.ORG
 -  HTML, CSS, JavaScript: 
 
 ## System Architecture
