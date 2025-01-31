@@ -1,116 +1,79 @@
 package com.quick_park_assist.entityTest;
 
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import com.quick_park_assist.entity.Reservation;
 import com.quick_park_assist.entity.User;
-import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.Date;
 
-import static org.assertj.core.api.Assertions.assertThat;
+public class ReservationTest {
 
-class ReservationTest {
+    private Reservation reservation;
+
+    @BeforeEach
+    public void setUp() {
+        reservation = new Reservation();
+    }
 
     @Test
-    void testIdGetterAndSetter() {
-        Reservation reservation = new Reservation();
+    public void testId() {
         reservation.setId(1L);
-
-        assertThat(reservation.getId()).isEqualTo(1L);
+        assertEquals(1L, reservation.getId());
     }
 
     @Test
-    void testNameGetterAndSetter() {
-        Reservation reservation = new Reservation();
+    public void testName() {
         reservation.setName("John Doe");
-
-        assertThat(reservation.getName()).isEqualTo("John Doe");
+        assertEquals("John Doe", reservation.getName());
     }
 
     @Test
-    void testVehicleNumberGetterAndSetter() {
-        Reservation reservation = new Reservation();
-        reservation.setVehicleNumber("AB123CD");
-
-        assertThat(reservation.getVehicleNumber()).isEqualTo("AB123CD");
+    public void testVehicleNumber() {
+        reservation.setVehicleNumber("ABC123");
+        assertEquals("ABC123", reservation.getVehicleNumber());
     }
 
     @Test
-    void testChargingStationGetterAndSetter() {
-        Reservation reservation = new Reservation();
-        reservation.setChargingStation("Station A");
-
-        assertThat(reservation.getChargingStation()).isEqualTo("Station A");
+    public void testChargingStation() {
+        reservation.setChargingStation("Station 1");
+        assertEquals("Station 1", reservation.getChargingStation());
     }
 
     @Test
-    void testUserGetterAndSetter() {
-        Reservation reservation = new Reservation();
-        User user = new User();
+    public void testUser() {
+        User user = new User(); // Assuming a User class exists
         user.setId(1L);
-        user.setFullName("Test User");
-
         reservation.setUser(user);
-
-        assertThat(reservation.getUser()).isNotNull();
-        assertThat(reservation.getUser().getId()).isEqualTo(1L);
-        assertThat(reservation.getUser().getFullName()).isEqualTo("Test User");
+        assertEquals(user, reservation.getUser());
     }
 
     @Test
-    void testSlotGetterAndSetter() {
-        Reservation reservation = new Reservation();
+    public void testSlot() {
         reservation.setSlot("A1");
-
-        assertThat(reservation.getSlot()).isEqualTo("A1");
+        assertEquals("A1", reservation.getSlot());
     }
 
     @Test
-    void testStatusGetterAndSetter() {
-        Reservation reservation = new Reservation();
-        reservation.setStatus("Active");
-
-        assertThat(reservation.getStatus()).isEqualTo("Active");
+    public void testStatus() {
+        reservation.setStatus("Confirmed");
+        assertEquals("Confirmed", reservation.getStatus());
     }
 
     @Test
-    void testReservationTimeGetterAndSetter() {
-        Reservation reservation = new Reservation();
-        Date now = new Date();
-        reservation.setReservationTime(now);
-
-        assertThat(reservation.getReservationTime()).isEqualTo(now);
+    public void testReservationTime() {
+        Date date = new Date();
+        reservation.setReservationTime(date);
+        assertEquals(date, reservation.getReservationTime());
     }
 
+    // New test for spotId
     @Test
-    void testFullEntity() {
-        // Create a user for testing
-        User user = new User();
-        user.setId(1L);
-        user.setFullName("Test User");
-
-        // Set all fields
-        Reservation reservation = new Reservation();
-        reservation.setId(100L);
-        reservation.setName("John Doe");
-        reservation.setVehicleNumber("AB123CD");
-        reservation.setChargingStation("Station A");
-        reservation.setUser(user);
-        reservation.setSlot("A1");
-        reservation.setStatus("Active");
-        Date now = new Date();
-        reservation.setReservationTime(now);
-
-        // Assert all fields
-        assertThat(reservation.getId()).isEqualTo(100L);
-        assertThat(reservation.getName()).isEqualTo("John Doe");
-        assertThat(reservation.getVehicleNumber()).isEqualTo("AB123CD");
-        assertThat(reservation.getChargingStation()).isEqualTo("Station A");
-        assertThat(reservation.getUser()).isNotNull();
-        assertThat(reservation.getUser().getId()).isEqualTo(1L);
-        assertThat(reservation.getUser().getFullName()).isEqualTo("Test User");
-        assertThat(reservation.getSlot()).isEqualTo("A1");
-        assertThat(reservation.getStatus()).isEqualTo("Active");
-        assertThat(reservation.getReservationTime()).isEqualTo(now);
+    public void testSpotId() {
+        reservation.setSpotId(1L); // Set the spot ID
+        assertEquals(1L, reservation.getSpotId()); // Assert that it matches
     }
 }

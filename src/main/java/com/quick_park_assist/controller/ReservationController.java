@@ -44,8 +44,8 @@ public class ReservationController {
     @Autowired
     private ParkingSpotRepository parkingSpotRepository;
     Logger log = LogManager.getLogger(ReservationController.class);
-    private static final String REDIRECT_TO_LOGIN = "redirect:/login";
-    private static final String REDIRECT_EV_CHARGING_ADD = "redirect:/ev-charging/add";
+    public static final String REDIRECT_TO_LOGIN = "redirect:/login";
+    public static final String REDIRECT_EV_CHARGING_ADD = "redirect:/ev-charging/add";
 
     @GetMapping("/list")
     public String listReservations(HttpSession session,Model model) {
@@ -152,7 +152,7 @@ public class ReservationController {
                    try {
                        user = userRepository.findById(userId)
                                .orElseThrow(() -> new RuntimeException("User not found"));
-                   }catch (RuntimeException e){
+                   }catch (Exception e){
                        log.info(e.getMessage());
                    }
 
@@ -168,6 +168,7 @@ public class ReservationController {
                }
            }
        } catch(RuntimeException e){
+           redirectAttributes.addFlashAttribute(ERROR_MESSAGE, "ERROR Occured");
            log.error("Error While adding Reservation {}",e.getMessage());
        }
         redirectAttributes.addFlashAttribute(ERROR_MESSAGE, "The Vehicle Number is not Registered or not an EV");

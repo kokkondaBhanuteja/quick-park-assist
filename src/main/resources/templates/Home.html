@@ -32,13 +32,13 @@
 					<li class="nav-item">
 						<a class="nav-link text-dark" th:href="@{/smart-spots/add-spot}">SMARTSPOTS</a>
 					</li>
-					<li class="nav-item">
+					<li class="nav-item" th:if="${session.userType == 'VEHICLE_OWNER'}">
 						<a class="nav-link text-dark" th:href="@{/bookingSpot/}">BOOKING</a>
 					</li>
 					<li class="nav-item">
 						<a class="nav-link text-dark" th:href="@{/addon/new}">ADDON SERVICES</a>
 					</li>
-					<li class="nav-item">
+					<li class="nav-item" th:if="${session.userType == 'VEHICLE_OWNER'}">
 						<a class="nav-link text-dark" th:href="@{/ev-charging/add}">EV CHARGING</a>
 					</li>
 					<li class="nav-item">

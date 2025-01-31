@@ -14,7 +14,7 @@
                 url="http://localhost:8088"
                 token="3e7a91d6-3933-4ecb-972d-058a8505906c"
                 host="localhost"
-                index="spring_dev"
+                index="park-assist"
                 type="raw"
                 source="quick-park-assist"
                 sourcetype="log4j"

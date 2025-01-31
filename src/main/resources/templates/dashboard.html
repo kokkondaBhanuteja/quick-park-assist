@@ -33,7 +33,7 @@
                 </li>
 
                 <!-- Show SMARTSPOTS only for Spot Owners -->
-                <li class="nav-item" th:if="${session.userType == 'SPOT_OWNER'}">
+                <li class="nav-item">
                     <a class="nav-link text-dark" th:href="@{/smart-spots/add-spot}">SMARTSPOTS</a>
                 </li>
 

@@ -66,7 +66,7 @@
       <h2 class="text-light"> Menu </h2>
       <div class="menu-btns">
         <a th:href="@{/dashboard}">OverView</a>
-        <a th:href="@{/profile/edit}" class="fw-bold fst-italic">Update Profile</a>
+        <a th:href="@{/profile/edit}" >Update Profile</a>
 
         <!-- Show only for Vehicle Owners -->
         <div th:if="${session.userType == 'VEHICLE_OWNER'}">
@@ -80,7 +80,7 @@
         </div>
 
         <a th:href="@{/auth/change-password}">Change Password</a>
-        <a th:href="@{/profileAction}">Delete Account</a>
+        <a th:href="@{/profileAction}" class="fw-bold fst-italic">Delete Account</a>
         <a th:href="@{/logout}">Logout</a>
       </div>
     </div>
