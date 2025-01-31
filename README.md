@@ -9,6 +9,7 @@
 6. [Usage](#usage)
 7. [Modules](#modules)
 8. [Database Design](#database-design)
+9. [Integration Guide](#integration-guide)
 9. [Future Enhancements](#future-enhancements)
 10. [Conclusion](#conclusion)
 
@@ -24,18 +25,32 @@ The **Java Quick Park Assist** project is a smart parking system designed to pro
 - **Addon Services:** Users can book additional services like cleaning and polishing.
 - **EV Charge Reservation:** Facilitates electric vehicle charging slot reservations.
 
+**KEY FEATURES**
+   -  OTP Verification: Ensures secure registration and account activation by sending a one-time password to the user's registered email or phone number.
+
+   -  Account Activation: Users must verify their email or phone number to activate their accounts and start using the services.
+
+   -  Forgot Password: Allows users to securely reset their passwords via email or SMS authentication.
+
+   -  Secure Login & Authentication: Implements industry-standard authentication and authorization mechanisms.
+
 ## Technologies Used
 ### Backend:
-- Java (Spring Boot)
-- MySQL
-- Spring Boot Data JPA
-- Spring Boot REST Services
-
+-  Java (Spring Boot): Version 3.4.2 
+-  SPRING.IO
+-  MySQL: Version 8.0.32
+-  Spring Boot Data JPA: Version 3.4.2
+-  Spring Boot REST Services: Version 3.4.2
+-  SonarQube: Version 9.9.8
+-  Splunk: Version 9.4
+-  Swagger: Version
 ### Frontend:
-- Thymeleaf
-- HTML, CSS, JavaScript
+-  Thymeleaf: Version 3.1.3.RELEASE 
+-  THYMELEAF.ORG
+-  HTML, CSS, JavaScript: 
 
 ## System Architecture
+```sh
 +-------------------------------+
 |         Frontend UI           |
 | (HTML, CSS, JavaScript, Thymeleaf) |
@@ -52,7 +67,8 @@ The **Java Quick Park Assist** project is a smart parking system designed to pro
 |         Database Layer        |
 |       (MySQL, Spring JPA)     |
 +-------------------------------+
-
+```
+![Architecture](images/architecture.jpeg)
 
 ## Installation Guide
 1. **Clone the repository:**
@@ -109,6 +125,181 @@ The **Java Quick Park Assist** project is a smart parking system designed to pro
 ![Database Schema](./images/database_schema.jpeg)
 - **Tables:** Users, ParkingSpots, Bookings, AddonServices, EVReservations.
 - **Relationships:** One-to-many mappings between users and bookings, parking spots, and services.
+
+## Integration Guide
+
+**Set up the database:**
+
+Install MySQL and create a database named quick_park_assist.
+
+Configure database properties in application.properties.
+```sh
+  spring.datasource.url=jdbc:mysql://localhost:3306/quick-park-assist?createDatabaseIfNotExist=true
+  spring.datasource.username=root
+  spring.datasource.password= yourDbPassword
+```
+
+**Access the application:**
+
+-  Open http://localhost:8080 in a web browser.
+
+Integration Guide
+
+**SonarQube Integration**
+
+Install SonarQube (Download from SonarQube).
+
+Configure SonarQube in pom.xml:
+
+<plugin>
+    <groupId>org.sonarsource.scanner.maven</groupId>
+    <artifactId>sonar-maven-plugin</artifactId>
+    <version>3.9.1.2184</version>
+</plugin>
+
+Start SonarQube Server:
+   ```sh
+      cd /path-to-sonarqube/bin/
+      ./sonar.sh start
+   ```
+
+
+**Run SonarQube Analysis:**
+   ```sh
+      mvn sonar:sonar -Dsonar.host.url=http://localhost:9000
+   ```
+
+**Access SonarQube Dashboard:**
+Open http://localhost:9000 and check your project’s analysis.
+![Sonar](./images/sonar.jpeg)
+
+**Swagger-UI Integration**
+
+-  Add Swagger dependencies to pom.xml:
+```sh
+<dependency>
+    <groupId>org.springdoc</groupId>
+    <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+    <version>2.0.2</version>
+</dependency>
+```
+Enable Swagger in application.properties:
+```sh
+   springdoc.api-docs.enabled=true  
+   springdoc.swagger-ui.path=/swagger-ui.html
+```
+Run the application and access Swagger UI:
+
+   -  Open http://localhost:8080/swagger-ui/index.html.
+   ![Swagger](./images/swagger.jpeg)
+
+**SplunkEC Integration**
+
+-  Download and Install Splunk Enterprise (Edition) from Splunk.
+
+-  Install Splunk SDK in your system
+
+-  Open browser and navigate to https://localhost:8000 
+
+-  Navigate to Settings → Data Inputs → HTTP Event Collector (HEC).
+
+-  Add Splunk HTTP Event Collector (HEC) Token:
+
+-  Enable in Global Settings 
+
+-  Enable HEC and create a token.
+
+-  Configure Splunk in Spring Boot application.properties:
+```sh
+splunk.hec.url=http://localhost:8088
+splunk.hec.token=your-hec-token
+```
+-  Add Logback appender to log4j2.xml:
+
+-  Add dependencies in pom.xml
+```sh
+   <dependency>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-starter-data-jpa</artifactId>
+			<exclusions>
+				<exclusion>
+					<groupId>org.springframework.boot</groupId>
+					<artifactId>spring-boot-starter-logging</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>ch.qos.logback</groupId>
+					<artifactId>logback-classic</artifactId>
+				</exclusion>
+			</exclusions>
+	</dependency>
+
+   <dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-web</artifactId>
+		<exclusions>
+				<exclusion>
+					<groupId>org.springframework.boot</groupId>
+					<artifactId>spring-boot-starter-logging</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>ch.qos.logback</groupId>
+					<artifactId>logback-classic</artifactId>
+				</exclusion>
+		</exclusions>
+	</dependency>
+   ```
+
+   -  These above dependencies should be excluded for the log4js to be selected and used in the project.
+
+   -  And these dependencies and a specific repository should be added.
+ ```sh
+   <repositories>
+		<repository>
+			<id>splunk-artifactory</id>
+			<name>Splunk Releases</name>
+			<url>https://splunk.jfrog.io/splunk/ext-releases-local</url>
+		</repository>
+	</repositories>
+   <dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-log4j2</artifactId>
+	</dependency>
+	
+   <dependency>
+			<groupId>com.splunk.logging</groupId>
+			<artifactId>splunk-library-javalogging</artifactId>
+			<version>1.8.0</version>
+			<scope>runtime</scope>
+	</dependency>
+```
+-  Add this Configuration in the log4j2.xml in resources directory
+```sh
+<configuration>
+   <Appenders>
+      <!-- Splunk HTTP Event Collector Appender -->
+        <SplunkHttp
+                name="yourHECName"
+                url="http://localhost:8088"
+                token="your-hec-token"
+                host="localhost"
+                index="your-index"
+                type="raw"
+                source="your-source"
+                sourcetype="log4j"
+                messageFormat="text"
+                disableCertificateValidation="true">
+            <PatternLayout pattern="%m" />
+        </SplunkHttp>
+   <Appenders>
+    <root level="info">
+        <appender-ref ref="yourHECName" />
+    </root>
+</configuration>
+```
+
+-  Verify logs in Splunk:
+-  Open Splunk UI and search logs with index="yourIndexName".
+![Splunk](./images/splunk.jpeg)
 
 ## Future Enhancements
 - Implement AI-based dynamic pricing for parking spots.
