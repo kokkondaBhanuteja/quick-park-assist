@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="30d31d44-2e0e-4dac-8262-55eae9308384" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/quick_park_assist/controller/StatsController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/quick_park_assist/controller/StatsController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/quick_park_assist/controller/VehicleController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/quick_park_assist/controller/VehicleController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/quick_park_assist/repository/BookingSpotRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/quick_park_assist/repository/BookingSpotRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/quick_park_assist/repository/ParkingSpotRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/quick_park_assist/repository/ParkingSpotRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/quick_park_assist/service/IStatsService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/quick_park_assist/service/IStatsService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/quick_park_assist/serviceImpl/StatsServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/quick_park_assist/serviceImpl/StatsServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/application.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/templates/AddReservation.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/templates/AddReservation.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/templates/AddVehicle.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/templates/AddVehicle.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/templates/BookingHistory.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/templates/BookingHistory.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/templates/CancelBooking.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/templates/CancelBooking.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/templates/CancelReservation.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/templates/CancelReservation.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/templates/CreateService.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/templates/CreateService.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/templates/DeleteProfile.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/templates/DeleteProfile.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/templates/EditOwnerService.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/templates/EditOwnerService.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/templates/EditParkingSpot.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/templates/EditParkingSpot.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/templates/EditProfile.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/templates/EditProfile.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/templates/EditReservation.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/templates/EditReservation.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/templates/EditVehicle.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/templates/EditVehicle.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/templates/ModifyBooking.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/templates/ModifyBooking.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/templates/RemoveOwnerService.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/templates/RemoveOwnerService.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/templates/RemoveParkingSpot.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/templates/RemoveParkingSpot.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/templates/SearchParkingSpot.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/templates/SearchParkingSpot.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/templates/SearchVehicle.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/templates/SearchVehicle.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/templates/ViewBookingByMobile.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/templates/ViewBookingByMobile.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/templates/ViewBookingBySpot.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/templates/ViewBookingBySpot.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/templates/ViewReservations.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/templates/ViewReservations.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/templates/addon-services.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/templates/addon-services.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/templates/changePassword.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/templates/changePassword.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/templates/create-addon.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/templates/create-addon.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/templates/dashboard.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/templates/dashboard.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/templates/delete-service.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/templates/delete-service.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/templates/forgotPassword.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/templates/forgotPassword.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/templates/login.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/templates/login.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/templates/modify-addon-duration.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/templates/modify-addon-duration.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/templates/myBookingSpot.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/templates/myBookingSpot.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/templates/registration.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/templates/registration.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/templates/updateReservation.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/templates/updateReservation.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/templates/view-addon-services.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/templates/view-addon-services.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/templates/viewOwnerService.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/templates/viewOwnerService.html" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;OPEN&quot;,
+    &quot;assignee&quot;: &quot;kokkondaBhanuteja&quot;
+  }
+}</component>
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/kokkondaBhanuteja/quick-park-assist.git&quot;,
+    &quot;accountId&quot;: &quot;a790846c-f8b3-45bc-8adf-0c279bbb214d&quot;
+  }
+}</component>
+  <component name="ProjectColorInfo">{
+  &quot;customColor&quot;: &quot;&quot;,
+  &quot;associatedIndex&quot;: 7
+}</component>
+  <component name="ProjectId" id="2sRcniZGHMZuY0vUvgZPVQTaBIO" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Application.QuickParkAssistApplication.executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;develop&quot;,
+    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;
+  }
+}</component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="30d31d44-2e0e-4dac-8262-55eae9308384" name="Changes" comment="" />
+      <created>1738421998765</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1738421998765</updated>
+    </task>
+    <servers />
+  </component>
+</project>
