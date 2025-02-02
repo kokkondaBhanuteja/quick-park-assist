@@ -43,18 +43,25 @@ public class StatsServiceImpl implements IStatsService {
     }
     @Override
     public Map<String, Object> getSpotOwnerStats(Long userId) {
-        // Mock implementation for SPOT_OWNER stats
         Map<String, Object> stats = new HashMap<>();
         stats.put("totalSpots", parkingSpotRepository.countTotalSpotsByOwner(userId));
         stats.put("evSpots", parkingSpotRepository.countEvSpotsByOwner(userId));
-        //stats.put("customers", reservationRepository.countUniqueCustomersByOwner(userId));
+        stats.put("currentBookings", bookingSpotRepository.countActiveBookingsByOwner(userId));
+        stats.put("totalRevenue", bookingSpotRepository.calculateTotalRevenueByOwner(userId));
         return stats;
     }
 
+
     @Override
-    public List<Map<String, Object>> getRecentActivity(Long userId, int limit) {
+    public List<Map<String, Object>> getRecentActivityForUser(Long userId, int limit) {
         Pageable pageable = PageRequest.of(0, limit);
         return bookingSpotRepository.findRecentActivityByUserId(userId, pageable).getContent();
 
     }
+    @Override
+    public List<Map<String, Object>> getRecentActivityForOwner(Long userId, int limit){
+        Pageable pageable = PageRequest.of(0, limit);
+        return parkingSpotRepository.getRecentActivityByUserId(userId,pageable).getContent();
+    }
+
 }

@@ -50,9 +50,16 @@ public class StatsController {
         if (userIdObj == null || !(userIdObj instanceof Long)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null); // Unauthorized
         }
-
         Long loggedInUser = (Long) userIdObj;
-        List<Map<String, Object>> recentActivity = statsService.getRecentActivity(loggedInUser, 4);
+        Object type = session.getAttribute("userType");
+        List<Map<String, Object>> recentActivity = null;
+        if(type.toString().equals("VEHICLE_OWNER")){
+            recentActivity = statsService.getRecentActivityForUser(loggedInUser, 4);
+        }
+        else{
+            recentActivity = statsService.getRecentActivityForOwner(loggedInUser,4);
+        }
+
         return ResponseEntity.ok(recentActivity);
     }
 }

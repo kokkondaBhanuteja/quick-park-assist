@@ -28,23 +28,23 @@
           <a class="nav-link text-dark" th:href="@{/}" aria-current="page">HOME</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link text-dark" th:href="@{/dashboard}">DASHBOARD</a>
+          <a class="nav-link text-dark" th:href="@{/dashboard}" aria-current="page">DASHBOARD</a>
         </li>
 
         <li class="nav-item">
           <a class="nav-link text-dark" th:href="@{/smart-spots/add-spot}">SMARTSPOTS</a>
         </li>
-        <li class="nav-item">
+        <li class="nav-item" th:if="${session.userType == 'VEHICLE_OWNER'}">
           <a class="nav-link text-dark" th:href="@{/bookingSpot/}">BOOKING</a>
         </li>
         <li class="nav-item">
           <a class="nav-link text-dark" th:href="@{/addon/new}">ADDON SERVICES</a>
         </li>
-        <li class="nav-item">
+        <li class="nav-item" th:if="${session.userType == 'VEHICLE_OWNER'}">
           <a class="nav-link text-dark" th:href="@{/ev-charging/add}">EV CHARGING</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link text-dark" th:href="@{/logout}">LOGOUT</a>
+          <a class="nav-link text-dark" th:if="${session.userIsThere== true}" th:href="@{/logout}">LOGOUT</a>
         </li>
       </ul>
     </div>
@@ -62,7 +62,7 @@
         <a th:href="@{/bookingSpot/}">Book Now</a>
         <a th:href="@{/modifySpot/}" class="fw-bold fst-italic" >Modify Booking Details</a>
         <a th:href="@{/bookingHistory/}">Booking History</a>
-        <a th:href="@{/viewBookingByMobile/}">View Booking By Mobile Number</a>
+        <a th:href="@{/viewBookingByMobile/}">View My Booking's</a>
         <a th:href="@{/viewBookingBySpot/}">View Booking By Spot</a>
         <a th:href="@{/cancelSpot/}" >Cancel Booking</a>
       </div>

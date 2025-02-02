@@ -29,7 +29,7 @@
           <a class="nav-link text-dark" th:href="@{/}" aria-current="page">HOME</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link text-dark" th:href="@{/dashboard}">DASHBOARD</a>
+          <a class="nav-link text-dark" th:href="@{/dashboard}" aria-current="page">DASHBOARD</a>
         </li>
 
         <li class="nav-item">
@@ -44,8 +44,8 @@
         <li class="nav-item" th:if="${session.userType == 'VEHICLE_OWNER'}">
           <a class="nav-link text-dark" th:href="@{/ev-charging/add}">EV CHARGING</a>
         </li>
-        <li class="nav-item" th:if="${session.userIsThere== true}">
-          <a class="nav-link text-dark" th:href="@{/logout}">LOGOUT</a>
+        <li class="nav-item">
+          <a class="nav-link text-dark" th:if="${session.userIsThere== true}" th:href="@{/logout}">LOGOUT</a>
         </li>
       </ul>
     </div>

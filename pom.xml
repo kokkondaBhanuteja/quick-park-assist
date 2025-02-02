@@ -41,6 +41,11 @@
 
 	<dependencies>
 		<dependency>
+			<groupId>io.micrometer</groupId>
+			<artifactId>micrometer-registry-prometheus</artifactId>
+		</dependency>
+
+		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-data-jpa</artifactId>
 			<exclusions>
@@ -143,9 +148,16 @@
 			<version>4.0.0</version>
 			<scope>test</scope>
 		</dependency>
-
-
-		<!-- Added dependencies for SonarQube and code coverage -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-actuator</artifactId>
+				<exclusions>
+					<exclusion>
+						<groupId>ch.qos.logback</groupId>
+						<artifactId>logback-classic</artifactId>
+					</exclusion>
+				</exclusions>
+		</dependency>
 	</dependencies>
 
 

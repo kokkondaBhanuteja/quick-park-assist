@@ -181,7 +181,7 @@ public class VehicleController {
     }
     // Helper method to check if user is spot owner
     private boolean isSpotOwner(HttpSession session) {
-        return "SPOT_OWNER".equals(session.getAttribute("userType"));
+        return !"SPOT_OWNER".equals(session.getAttribute("userType"));
     }
 
     // Show search form for spot owners

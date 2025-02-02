@@ -73,7 +73,7 @@
 
                 <!-- Show only for Spot Owners -->
                 <div th:if="${session.userType == 'SPOT_OWNER'}">
-                    <a th:href="@{/vehicles/search}">View User by Vehicle No.</a>
+                    <a th:href="@{/vehicles/search}">View User by Vehicle Number</a>
                 </div>
 
                 <a th:href="@{/auth/change-password}">Change Password</a>
@@ -168,33 +168,42 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
 
 
-<<script>
+<script>
     async function fetchStats() {
         try {
             const response = await fetch('/api/stats');
             if (!response.ok) throw new Error('Failed to fetch stats');
             const stats = await response.json();
-
-            document.getElementById('availableSpots').textContent = stats.availableSpots || 0;
-            document.getElementById('activeBookings').textContent = stats.activeBookings || 0;
-            document.getElementById('totalHours').textContent = stats.totalHours || 0;
-            document.getElementById('amountSpent').textContent = `$${stats.amountSpent || 0}`;
+            if (stats.totalSpots !== undefined) {  // Ensure it's for SPOT_OWNER
+                document.getElementById('totalSpots').textContent = stats.totalSpots || 0;
+                document.getElementById('currentBookings').textContent = stats.currentBookings || 0;
+                document.getElementById('totalRevenue').textContent = `$${stats.totalRevenue || 0}`;
+            } else {  // VEHICLE_OWNER
+                document.getElementById('availableSpots').textContent = stats.availableSpots || 0;
+                document.getElementById('activeBookings').textContent = stats.activeBookings || 0;
+                document.getElementById('totalHours').textContent = stats.totalHours || 0;
+                document.getElementById('amountSpent').textContent = `$${stats.amountSpent || 0}`;
+            }
         } catch (error) {
             console.error('Error fetching stats:', error);
         }
     }
 
     async function fetchRecentActivity() {
-       try {
-            const response = await fetch('/api/stats/recent-activity');
-            if (!response.ok) throw new Error('Failed to fetch recent activity');
-            const activities = await response.json();
+    try {
+        const response = await fetch('/api/stats/recent-activity');
+        if (!response.ok) throw new Error('Failed to fetch recent activity');
+        const activities = await response.json();
 
-            const activityContainer = document.getElementById("recentActivity");
-            activityContainer.innerHTML = "";
+        const activityContainer = document.getElementById("recentActivity");
+        activityContainer.innerHTML = "";
 
-            activities.slice(0, 4).forEach(activity => { // Ensure only the top 4 are displayed
-                const activityElement = `
+        activities.slice(0, 4).forEach(activity => {
+            let activityElement;
+
+            if (activity.estimatedPrice !== undefined) {
+                // VEHICLE_OWNER Activity (Shows Booking Details)
+                activityElement = `
                     <li class="list-group-item">
                         <div class="d-flex justify-content-between">
                             <span>Spot: ${activity.spotName}</span>
@@ -202,28 +211,39 @@
                         </div>
                         <p>Amount: $${activity.estimatedPrice}</p>
                     </li>`;
-                activityContainer.insertAdjacentHTML("beforeend", activityElement);
-            });
-        } catch (error) {
-            console.error('Error fetching recent activity:', error);
-       }
+            } else {
+                // SPOT_OWNER Activity (Shows Spot Details)
+                activityElement = `
+                    <li class="list-group-item">
+                        <div class="d-flex justify-content-between">
+                            <span>Spot: ${activity.spotName} (${activity.spotType})</span>
+                            <small>Location: ${activity.location}</small>
+                        </div>
+                        <p>Price per Hour: $${activity.pricePerHour}</p>
+                    </li>`;
+            }
+
+            activityContainer.insertAdjacentHTML("beforeend", activityElement);
+        });
+    } catch (error) {
+        console.error('Error fetching recent activity:', error);
     }
+}
+
 
     function updateDashboard() {
         fetchStats();
         fetchRecentActivity();
     }
     function updateStats() {
-    fetch('/vehicles/api/stats')
+    fetch('/api/stats')
         .then(response => response.json())
         .then(stats => {
-            if (document.getElementById('totalSpots')) {
-                // Update spot owner stats
+            if (stats.totalSpots !== undefined) {  // Ensure it's for SPOT_OWNER
                 document.getElementById('totalSpots').textContent = stats.totalSpots || 0;
                 document.getElementById('currentBookings').textContent = stats.currentBookings || 0;
                 document.getElementById('totalRevenue').textContent = `$${stats.totalRevenue || 0}`;
-            } else {
-                // Update vehicle owner stats
+            } else {  // VEHICLE_OWNER
                 document.getElementById('availableSpots').textContent = stats.availableSpots || 0;
                 document.getElementById('activeBookings').textContent = stats.activeBookings || 0;
                 document.getElementById('totalHours').textContent = stats.totalHours || 0;
@@ -232,6 +252,7 @@
         })
         .catch(error => console.error('Error fetching stats:', error));
 }
+
 
 // Update stats every 30 seconds
 setInterval(updateStats, 30000);

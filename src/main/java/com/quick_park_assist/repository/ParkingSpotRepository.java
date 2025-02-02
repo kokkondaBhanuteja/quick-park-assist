@@ -1,10 +1,16 @@
 package com.quick_park_assist.repository;
 
 import com.quick_park_assist.entity.ParkingSpot;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
+import java.net.ContentHandler;
 import java.util.List;
+import java.util.Map;
+
 public interface ParkingSpotRepository extends JpaRepository<ParkingSpot, Long> {
     @Query("SELECT COUNT(p) FROM ParkingSpot p WHERE p.user.id = :userId")
     int countTotalSpotsByOwner(Long userId);
@@ -28,4 +34,9 @@ public interface ParkingSpotRepository extends JpaRepository<ParkingSpot, Long> 
             String availability, String spotLocation, String location, String spotType);
 
     List<ParkingSpot> findBySpotType(String evSpot);
+
+
+    @Query("SELECT new map(p.id as id, p.spotLocation as spotName, p.spotType as spotType, p.location as Location, p.pricePerHour as pricePerHour) " +
+            "FROM ParkingSpot p WHERE p.user.id = :userId ")
+    Page<Map<String, Object>> getRecentActivityByUserId(@Param("userId")Long userId, Pageable pageable);
 }

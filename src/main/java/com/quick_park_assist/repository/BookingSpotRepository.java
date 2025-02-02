@@ -49,4 +49,10 @@ public interface BookingSpotRepository extends JpaRepository<BookingSpot, Long> 
             "WHERE  b.spot_id = :spotId " +
             "ORDER BY b.end_time DESC LIMIT 1", nativeQuery = true)
     Optional<BookingSpot> findTopLastBookingSpotByUserIdAndSpotId(@Param("userId") Long userId, @Param("spotId") Long spotId);
+
+    @Query("SELECT COUNT(b) FROM BookingSpot b WHERE b.spotID.user.id = :ownerId AND b.bookingSpotStatus = 'CONFIRMED'")
+    Long countActiveBookingsByOwner(@Param("ownerId") Long ownerId);
+
+    @Query("SELECT COALESCE(SUM(b.estimatedPrice), 0) FROM BookingSpot b WHERE b.spotID.user.id = :ownerId")
+    Double calculateTotalRevenueByOwner(@Param("ownerId") Long ownerId);
 }
