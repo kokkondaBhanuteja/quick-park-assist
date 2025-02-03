@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -51,12 +52,12 @@ public class StatsController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null); // Unauthorized
         }
         Long loggedInUser = (Long) userIdObj;
-        Object type = session.getAttribute("userType");
-        List<Map<String, Object>> recentActivity = null;
-        if(type.toString().equals("VEHICLE_OWNER")){
+        String type = (String) session.getAttribute("userType");
+        List<Map<String, Object>> recentActivity = Collections.emptyList();
+        if(type !=null && type.equals("VEHICLE_OWNER")){
             recentActivity = statsService.getRecentActivityForUser(loggedInUser, 4);
         }
-        else{
+        else if(type != null &&type.equals("SPOT_OWNER")){
             recentActivity = statsService.getRecentActivityForOwner(loggedInUser,4);
         }
 

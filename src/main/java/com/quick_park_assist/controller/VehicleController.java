@@ -13,9 +13,8 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import java.util.HashMap;
+
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 @Controller
@@ -180,7 +179,7 @@ public class VehicleController {
         return REDIRECT_DASHBOARD;
     }
     // Helper method to check if user is spot owner
-    private boolean isSpotOwner(HttpSession session) {
+    public boolean isSpotOwner(HttpSession session) {
         return !"SPOT_OWNER".equals(session.getAttribute("userType"));
     }
 
@@ -223,7 +222,7 @@ public class VehicleController {
             else{
                 model.addAttribute(VEHICLE, vehicle.get());
             }
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             model.addAttribute(ERROR_MESSAGE, "Error searching vehicle: " + e.getMessage());
         }
 

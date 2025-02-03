@@ -51,5 +51,21 @@
             <AppenderRef ref="quick-park-assist"/>
             <AppenderRef ref="RollingFile"/>
         </Root>
+        <Root level="debug">
+            <AppenderRef ref="Console"/>
+            <AppenderRef ref="quick-park-assist"/>
+            <AppenderRef ref="RollingFile"/>
+        </Root>
+        <Root level="warn">
+            <AppenderRef ref="Console"/>
+            <AppenderRef ref="quick-park-assist"/>
+            <AppenderRef ref="RollingFile"/>
+        </Root>
+
+        <Root level="error">
+            <AppenderRef ref="Console"/>
+            <AppenderRef ref="quick-park-assist"/>
+            <AppenderRef ref="RollingFile"/>
+        </Root>
     </Loggers>
 </Configuration>

@@ -11,6 +11,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.springframework.mock.web.MockHttpSession;
 import org.springframework.ui.Model;
@@ -23,6 +24,7 @@ import java.util.List;
 import java.util.Collections;
 import java.util.Optional;
 
+import static com.quick_park_assist.controller.VehicleController.USER_ID;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 
@@ -48,7 +50,7 @@ class VehicleControllerTest {
 
 	@InjectMocks
 	private VehicleController vehicleController;
-
+	private static final String VEHICLE_NUMBER = "ABC1234";
 	@BeforeEach
 	void setUp() {
 		MockitoAnnotations.openMocks(this);
@@ -279,7 +281,11 @@ class VehicleControllerTest {
 		when(session.getAttribute("userId")).thenReturn(1L);
 		when(vehicleRepository.findByVehicleNumber("NOT_EXIST")).thenReturn(Optional.empty());
 
-		String result = vehicleController.searchVehicle("NOT_EXIST", session, model);
+		// Spy on vehicleController to override isSpotOwner()
+		VehicleController spyController = Mockito.spy(vehicleController);
+		doReturn(false).when(spyController).isSpotOwner(session);
+
+		String result = spyController.searchVehicle(VEHICLE_NUMBER, session, model);
 		assertEquals("SearchVehicle", result);
 		verify(model).addAttribute("errorMessage", "No vehicle found with this number");
 	}
@@ -288,21 +294,28 @@ class VehicleControllerTest {
 	@Test
 	void testSearchVehicle_VehicelFoundNotEmpty() {
 		Vehicle vehicle=new Vehicle();
-		when(session.getAttribute("userId")).thenReturn(1L);
+		when(session.getAttribute("userId")).thenReturn(2L);
+		when(vehicleController.isSpotOwner(session)).thenReturn(true);
 		when(vehicleRepository.findByVehicleNumber("NOT_EXIST")).thenReturn(Optional.of(vehicle));
+		// Spy on vehicleController to override isSpotOwner()
+		VehicleController spyController = Mockito.spy(vehicleController);
+		doReturn(false).when(spyController).isSpotOwner(session);
 
-		String result = vehicleController.searchVehicle("NOT_EXIST", session, model);
+		String result = spyController.searchVehicle(VEHICLE_NUMBER, session, model);
 		assertEquals("SearchVehicle", result);
 	}
 	
 	@Test
 	void testSearchVehicle_RunTimeException() {
-		Vehicle vehicle=new Vehicle();
 		when(session.getAttribute("userId")).thenReturn(1L);
-		doThrow(new RuntimeException("Service Error")).when(vehicleRepository).findByVehicleNumber("NOT_EXIST");
+		when(vehicleRepository.findByVehicleNumber("NOT_EXIST")).thenThrow((new RuntimeException("Service Error")));
+		// Spy on vehicleController to override isSpotOwner()
+		VehicleController spyController = Mockito.spy(vehicleController);
+		doReturn(false).when(spyController).isSpotOwner(session);
 
-		String result = vehicleController.searchVehicle("NOT_EXIST", session, model);
+		String result = spyController.searchVehicle("NOT_EXIST", session, model);
 		verify(model).addAttribute("errorMessage", "Error searching vehicle: Service Error");
+		assertEquals("SearchVehicle", result);
 	}
 
 
@@ -401,8 +414,93 @@ class VehicleControllerTest {
 	@Test
 	void testShowSearchForm_User() {
 		when(session.getAttribute("userId")).thenReturn(2L);
+		// Spy on vehicleController to override isSpotOwner()
+		// Spy on vehicleController to override isSpotOwner()
+		VehicleController spyController = Mockito.spy(vehicleController);
+		doReturn(false).when(spyController).isSpotOwner(session);
 
-		String viewName = vehicleController.showSearchForm(session, model);
-		assertEquals("SearchVehicle", viewName);
+		String result = spyController.showSearchForm(session, model);
+		assertEquals("SearchVehicle", result);
+	}
+	@Test
+	void testSearchVehicle_ValidVehicle() {
+		// Arrange
+		Vehicle vehicle = new Vehicle();
+		when(session.getAttribute(USER_ID)).thenReturn(1L);
+		when(vehicleRepository.findByVehicleNumber(VEHICLE_NUMBER)).thenReturn(Optional.of(vehicle));
+
+		// Spy on vehicleController to override isSpotOwner()
+		VehicleController spyController = Mockito.spy(vehicleController);
+		doReturn(false).when(spyController).isSpotOwner(session);
+
+		String result = spyController.searchVehicle(VEHICLE_NUMBER, session, model);
+
+		// Assert
+		assertEquals("SearchVehicle", result);
+		verify(model).addAttribute("vehicle", vehicle);
+	}
+
+	@Test
+	void testSearchVehicle_InvalidVehicle() {
+		when(session.getAttribute(USER_ID)).thenReturn(1L);
+		when(vehicleRepository.findByVehicleNumber(VEHICLE_NUMBER)).thenReturn(Optional.empty());
+		when(vehicleController.isSpotOwner(session)).thenReturn(false);
+
+		// Spy on vehicleController to override isSpotOwner()
+		VehicleController spyController = Mockito.spy(vehicleController);
+		doReturn(false).when(spyController).isSpotOwner(session);
+
+		String result = spyController.searchVehicle(VEHICLE_NUMBER, session, model);
+
+
+		assertEquals("SearchVehicle", result);
+		verify(model).addAttribute("errorMessage", "No vehicle found with this number");
+	}
+
+	@Test
+	void testSearchVehicle_UserNotLoggedIn() {
+		when(session.getAttribute(USER_ID)).thenReturn(null);
+
+		String result = vehicleController.searchVehicle(VEHICLE_NUMBER, session, model);
+
+		assertEquals("redirect:/login", result);
+	}
+
+	@Test
+	void testSearchVehicle_UserIsSpotOwner() {
+		when(session.getAttribute(USER_ID)).thenReturn(1L);
+		when(vehicleController.isSpotOwner(session)).thenReturn(true);
+
+		String result = vehicleController.searchVehicle(VEHICLE_NUMBER, session, model);
+
+		assertEquals("redirect:/dashboard", result);
+	}
+
+	@Test
+	void testSearchVehicle_DatabaseError() {
+		when(session.getAttribute(USER_ID)).thenReturn(1L);
+		when(vehicleRepository.findByVehicleNumber(VEHICLE_NUMBER)).thenThrow(new RuntimeException("DB Error"));
+		// Spy on vehicleController to override isSpotOwner()
+		VehicleController spyController = Mockito.spy(vehicleController);
+		doReturn(false).when(spyController).isSpotOwner(session);
+
+		String result = spyController.searchVehicle(VEHICLE_NUMBER, session, model);
+
+		assertEquals("SearchVehicle", result);
+		verify(model).addAttribute("errorMessage", "Error searching vehicle: DB Error");
+	}
+
+	@Test
+	void testSearchVehicle_NullVehicleNumber() {
+		when(session.getAttribute(USER_ID)).thenReturn(1L);
+
+		// Spy on vehicleController to override isSpotOwner()
+		VehicleController spyController = Mockito.spy(vehicleController);
+		doReturn(false).when(spyController).isSpotOwner(session);
+
+		String result = spyController.searchVehicle(null, session, model);
+
+		assertEquals("SearchVehicle", result);
+		verify(model).addAttribute("errorMessage", "No vehicle found with this number");
 	}
 }

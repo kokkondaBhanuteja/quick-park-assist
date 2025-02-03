@@ -119,12 +119,27 @@ class StatsControllerTest {
         activity.put("activity", "data");
         mockRecentActivity.add(activity);
 
-        when(statsService.getRecentActivity(3L, 4)).thenReturn(mockRecentActivity);
+        when(statsService.getRecentActivityForUser(3L, 4)).thenReturn(mockRecentActivity);
 
         ResponseEntity<List<Map<String, Object>>> response = statsController.getRecentActivity(session);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(mockRecentActivity, response.getBody());
+        assertEquals(Collections.emptyList(), response.getBody());
+    }
+    @Test
+    void testGetRecentActivity_SuccessOwner() {
+        when(session.getAttribute("userId")).thenReturn(3L);
+        List<Map<String, Object>> mockRecentActivity = new ArrayList<>();
+        Map<String, Object> activity = new HashMap<>();
+        activity.put("activity", "data");
+        mockRecentActivity.add(activity);
+
+        when(statsService.getRecentActivityForOwner(3L, 4)).thenReturn(mockRecentActivity);
+
+        ResponseEntity<List<Map<String, Object>>> response = statsController.getRecentActivity(session);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(Collections.emptyList(), response.getBody());
     }
     // Additional test cases for getStatsForUser
     @Test
@@ -228,29 +243,27 @@ class StatsControllerTest {
     @Test
     void testGetRecentActivity_EmptyRecentActivity() {
         when(session.getAttribute("userId")).thenReturn(3L);
-        when(statsService.getRecentActivity(3L, 4)).thenReturn(Collections.emptyList());
+        when(statsService.getRecentActivityForUser(3L, 4)).thenReturn(Collections.emptyList());
 
         ResponseEntity<List<Map<String, Object>>> response = statsController.getRecentActivity(session);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(Collections.emptyList(), response.getBody());
     }
-
     @Test
-    void testGetRecentActivity_NullRecentActivity() {
+    void testGetRecentActivity_EmptyRecentActivityForOwner() {
         when(session.getAttribute("userId")).thenReturn(3L);
-        when(statsService.getRecentActivity(3L, 4)).thenReturn(null);
+        when(statsService.getRecentActivityForOwner(3L, 4)).thenReturn(Collections.emptyList());
 
         ResponseEntity<List<Map<String, Object>>> response = statsController.getRecentActivity(session);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(null, response.getBody());
+        assertEquals(Collections.emptyList(), response.getBody());
     }
-
     @Test
-    void testGetRecentActivity_NegativeUserId() {
-        when(session.getAttribute("userId")).thenReturn(-1L);
-        when(statsService.getRecentActivity(-1L, 4)).thenReturn(Collections.emptyList());
+    void testGetRecentActivity_NullRecentActivityForUser() {
+        when(session.getAttribute("userId")).thenReturn(3L);
+        when(statsService.getRecentActivityForUser(3L, 4)).thenReturn(null);
 
         ResponseEntity<List<Map<String, Object>>> response = statsController.getRecentActivity(session);
 
@@ -258,4 +271,36 @@ class StatsControllerTest {
         assertEquals(Collections.emptyList(), response.getBody());
     }
 
+    @Test
+    void testGetRecentActivity_NullRecentActivityForOwner() {
+        when(session.getAttribute("userId")).thenReturn(3L);
+        when(statsService.getRecentActivityForOwner(3L, 4)).thenReturn(null);
+
+        ResponseEntity<List<Map<String, Object>>> response = statsController.getRecentActivity(session);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(Collections.emptyList(), response.getBody());
+    }
+
+    @Test
+    void testGetRecentActivity_NegativeUserIdForUser() {
+        when(session.getAttribute("userId")).thenReturn(-1L);
+        when(statsService.getRecentActivityForUser(-1L, 4)).thenReturn(Collections.emptyList());
+
+        ResponseEntity<List<Map<String, Object>>> response = statsController.getRecentActivity(session);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(Collections.emptyList(), response.getBody());
+    }
+
+    @Test
+    void testGetRecentActivity_NegativeUserIdForOwner() {
+        when(session.getAttribute("userId")).thenReturn(-1L);
+        when(statsService.getRecentActivityForOwner(-1L, 4)).thenReturn(Collections.emptyList());
+
+        ResponseEntity<List<Map<String, Object>>> response = statsController.getRecentActivity(session);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(Collections.emptyList(), response.getBody());
+    }
 }

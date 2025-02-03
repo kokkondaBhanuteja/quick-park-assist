@@ -151,7 +151,7 @@ class StatsServiceImplTest {
         when(bookingSpotRepository.findRecentActivityByUserId(eq(userId), any(PageRequest.class))).thenReturn(page);
 
         // Act
-        List<Map<String, Object>> result = statsService.getRecentActivity(userId, limit);
+        List<Map<String, Object>> result = statsService.getRecentActivityForUser(userId, limit);
 
         // Assert
         assertEquals(2, result.size());
@@ -168,7 +168,7 @@ class StatsServiceImplTest {
         when(bookingSpotRepository.findRecentActivityByUserId(eq(userId), any(PageRequest.class))).thenReturn(emptyPage);
 
         // Act
-        List<Map<String, Object>> result = statsService.getRecentActivity(userId, limit);
+        List<Map<String, Object>> result = statsService.getRecentActivityForUser(userId, limit);
 
         // Assert
         assertEquals(0, result.size());

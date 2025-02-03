@@ -20,16 +20,12 @@ public class StatsServiceImpl implements IStatsService {
     private final BookingSpotRepository bookingSpotRepository;
     private final VehicleRepository vehicleRepository;
     private final ParkingSpotRepository parkingSpotRepository;
-    private final ReservationRepository reservationRepository;
-
 
     @Autowired
     public StatsServiceImpl(BookingSpotRepository bookingSpotRepository, VehicleRepository vehicleRepository, ParkingSpotRepository parkingSpotRepository, ReservationRepository reservationRepository) {
         this.bookingSpotRepository = bookingSpotRepository;
         this.vehicleRepository = vehicleRepository;
-        this.parkingSpotRepository = parkingSpotRepository;
-        this.reservationRepository = reservationRepository;
-    }
+        this.parkingSpotRepository = parkingSpotRepository;}
 
     @Override
 
