@@ -13,10 +13,11 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 import java.util.*;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 class StatsServiceImplTest {
@@ -172,5 +173,55 @@ class StatsServiceImplTest {
 
         // Assert
         assertEquals(0, result.size());
+    }
+    @Test
+    void testGetRecentActivityForOwner_Success() {
+        Long userId = 1L;
+        int limit = 2;
+        Pageable pageable = PageRequest.of(0, limit);
+
+        List<Map<String, Object>> parkingSpotList = new ArrayList<>();
+        Map<String, Object> spot1 = new HashMap<>();
+        spot1.put("id", 101L);
+        spot1.put("spotName", "A1");
+        spot1.put("spotType", "Compact");
+        spot1.put("Location", "Downtown");
+        spot1.put("pricePerHour", 5.0);
+        parkingSpotList.add(spot1);
+
+        Map<String, Object> spot2 = new HashMap<>();
+        spot2.put("id", 102L);
+        spot2.put("spotName", "B2");
+        spot2.put("spotType", "SUV");
+        spot2.put("Location", "Uptown");
+        spot2.put("pricePerHour", 7.5);
+        parkingSpotList.add(spot2);
+
+        Page<Map<String, Object>> parkingSpotPage = new PageImpl<>(parkingSpotList, pageable, parkingSpotList.size());
+
+        when(parkingSpotRepository.getRecentActivityByUserId(userId, pageable)).thenReturn(parkingSpotPage);
+
+        List<Map<String, Object>> result = statsService.getRecentActivityForOwner(userId, limit);
+
+        assertNotNull(result);
+        assertEquals(2, result.size());
+        assertEquals(101L, result.get(0).get("id"));
+        assertEquals("A1", result.get(0).get("spotName"));
+        assertEquals(102L, result.get(1).get("id"));
+    }
+
+    @Test
+    void testGetRecentActivityForOwner_EmptyResult() {
+        Long userId = 2L;
+        int limit = 5;
+        Pageable pageable = PageRequest.of(0, limit);
+
+        Page<Map<String, Object>> emptyPage = new PageImpl<>(Collections.emptyList(), pageable, 0);
+        when(parkingSpotRepository.getRecentActivityByUserId(userId, pageable)).thenReturn(emptyPage);
+
+        List<Map<String, Object>> result = statsService.getRecentActivityForOwner(userId, limit);
+
+        assertNotNull(result);
+        assertTrue(result.isEmpty());
     }
 }

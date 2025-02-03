@@ -791,6 +791,75 @@ class UserControllerTest {
         assertEquals("redirect:/profileAction", result);
         verify(redirectAttributes).addFlashAttribute(ERROR_MESSAGE, "Error deleting account: Error");
     }
+    @Test
+    void testResendOTP_SessionExpired() {
+        when(session.getAttribute("pendingRegistration")).thenReturn(null);
+
+        String result = userController.resendOTP(session, model, redirectAttributes);
+
+        assertEquals("redirect:/register", result);
+        verify(redirectAttributes).addFlashAttribute("errorMessage", "Registration session expired. Please register again.");
+    }
+    @Test
+    void testResendOTP_CooldownNotOver() {
+        UserRegistrationDTO userDTO = new UserRegistrationDTO();
+        userDTO.setEmail("test@example.com");
+        when(session.getAttribute("pendingRegistration")).thenReturn(userDTO);
+        when(session.getAttribute("lastOtpResendTime")).thenReturn(System.currentTimeMillis() - 15000); // 15 seconds ago
+
+        String result = userController.resendOTP(session, model, redirectAttributes);
+
+        assertEquals("registration-verify", result);
+        verify(registrationOTPService, never()).sendRegistrationOTP(anyString());
+        verify(model).addAttribute("errorMessage", "Please wait before requesting a new code");
+    }
+    @Test
+    void testResendOTP_ExceptionThrown() {
+        UserRegistrationDTO userDTO = new UserRegistrationDTO();
+        userDTO.setEmail("test@example.com");
+        when(session.getAttribute("pendingRegistration")).thenReturn(userDTO);
+        when(session.getAttribute("lastOtpResendTime")).thenReturn(null);
+        doThrow(new RuntimeException("OTP service error")).when(registrationOTPService).sendRegistrationOTP(userDTO.getEmail());
+
+        String result = userController.resendOTP(session, model, redirectAttributes);
+
+        assertEquals("registration-verify", result);
+        verify(model).addAttribute("errorMessage", "Failed to send new code. Please try again.");
+    }
+    @Test
+    void testResendOTP_NullPointerException() {
+        // Arrange: Simulate `pendingRegistration` being null
+        when(session.getAttribute("pendingRegistration")).thenReturn(null);
+
+        // Act
+        String result = userController.resendOTP(session, model, redirectAttributes);
+
+        // Assert
+        assertEquals("redirect:/register", result); // Should redirect if session expired
+        verify(redirectAttributes).addFlashAttribute("errorMessage", "Registration session expired. Please register again.");
+    }
+
+    @Test
+    void testRegisterUser_PhoneNumberAlreadyTaken() {
+        // Arrange
+        UserRegistrationDTO userDTO = new UserRegistrationDTO();
+        userDTO.setPhoneNumber("1234567890");
+        userDTO.setEmail("test@example.com"); // Ensure all required fields are set
+
+        when(bindingResult.hasErrors()).thenReturn(false);
+        when(userService.isEmailTaken(anyString())).thenReturn(false);
+        when(userService.isPhoneNumberTaken(anyString())).thenReturn(true);
+        when(session.getAttribute(anyString())).thenReturn(null); // Ensure session doesn't throw NullPointerException
+
+        // Act
+        String result = userController.registerUser(userDTO, bindingResult, session, model);
+
+        // Assert
+        assertEquals("registration", result);
+        verify(bindingResult).rejectValue("phoneNumber", "phone.exists", "Phone number already registered");
+    }
+
+
 
 
 }

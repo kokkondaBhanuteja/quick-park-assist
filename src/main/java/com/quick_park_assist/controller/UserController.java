@@ -109,6 +109,7 @@ public class UserController {
             }
             if (userService.isPhoneNumberTaken(userDTO.getPhoneNumber())) {
                 result.rejectValue("phoneNumber", "phone.exists", "Phone number already registered");
+                return REGISTRATION;
             }
 
             // Add this check for validation errors

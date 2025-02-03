@@ -1,0 +1,21 @@
+# Ignore IntelliJ IDEA settings
+.idea/
+
+
+# Ignore Eclipse files
+.classpath
+.project
+.settings/
+
+#Ignore IML File
+quick-park-assist.iml
+# Ignore compiled Java files
+*.class
+
+# Ignore build and target folders
+/target/
+/build/
+
+# Ignore logs
+logs/
+*.log

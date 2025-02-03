@@ -16,6 +16,7 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.ui.Model;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -138,7 +139,7 @@ class ModifyBookingControllerTest {
         // Arrange
         Long bookingId = 1L;
         Long spotID = 101L;
-        String startTimeStr = "2025-01-25T10:00";
+        String startTimeStr = "3030-01-25T10:00";
         Double duration = -1.0; // Invalid duration
 
         // Act
@@ -146,7 +147,7 @@ class ModifyBookingControllerTest {
 
         // Assert
         assertEquals("redirect:/modifySpot/", viewName);
-        verify(redirectAttributes).addFlashAttribute("errorMessage", "Please select a future date and time.");
+        verify(redirectAttributes).addFlashAttribute("errorMessage", "Please select a valid duration.");
         verifyNoInteractions(modifySpotService);
     }
     //seventh-TestCase
@@ -221,14 +222,14 @@ class ModifyBookingControllerTest {
         // Arrange
         Long bookingId = 1L;
         Long spotID = 1L;
-        String startTimeStr = "2025-01-25T10:00";
+        String startTimeStr = "3030-01-25T10:00";
 
         // Act
         String viewName = modifySpotController.updateSpotDetails(bookingId, spotID, startTimeStr, null, redirectAttributes);
 
         // Assert
         assertEquals("redirect:/modifySpot/", viewName);
-        verify(redirectAttributes).addFlashAttribute("errorMessage", "Please select a future date and time.");
+        verify(redirectAttributes).addFlashAttribute("errorMessage", "Please select a valid duration.");
         verifyNoInteractions(modifySpotService);
     }
 
@@ -387,6 +388,5 @@ class ModifyBookingControllerTest {
         assertEquals("redirect:/modifySpot/", viewName);
         verify(redirectAttributes).addFlashAttribute("errorMessage", "Please select a future date and time.");
     }
-
 
 }

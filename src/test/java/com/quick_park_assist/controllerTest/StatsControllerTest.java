@@ -13,6 +13,7 @@ import jakarta.servlet.http.HttpSession;
 import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.*;
 
 class StatsControllerTest {
@@ -303,4 +304,54 @@ class StatsControllerTest {
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(Collections.emptyList(), response.getBody());
     }
+    @Test
+    void testGetRecentActivity_VehicleOwner() {
+        Long mockUserId = 123L;
+        List<Map<String, Object>> mockData = new ArrayList<>();
+        Map<String, Object> data = new HashMap<>();
+        data.put("activity", "Some activity");
+        mockData.add(data);
+
+        // Mock session attributes
+        when(session.getAttribute("userId")).thenReturn(mockUserId);
+        when(session.getAttribute("userType")).thenReturn("VEHICLE_OWNER");
+
+        // Mock service call
+        when(statsService.getRecentActivityForUser(mockUserId, 4)).thenReturn(mockData);
+
+        // Call the method
+        ResponseEntity<List<Map<String, Object>>> response = statsController.getRecentActivity(session);
+
+        // Validate response
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertNotNull(response.getBody());
+        assertEquals(1, response.getBody().size());
+        assertEquals("Some activity", response.getBody().get(0).get("activity"));
+    }
+
+    @Test
+    void testGetRecentActivity_SpotOwner() {
+        Long mockUserId = 456L;
+        List<Map<String, Object>> mockData = new ArrayList<>();
+        Map<String, Object> data = new HashMap<>();
+        data.put("activity", "Another activity");
+        mockData.add(data);
+
+        // Mock session attributes
+        when(session.getAttribute("userId")).thenReturn(mockUserId);
+        when(session.getAttribute("userType")).thenReturn("SPOT_OWNER");
+
+        // Mock service call
+        when(statsService.getRecentActivityForOwner(mockUserId, 4)).thenReturn(mockData);
+
+        // Call the method
+        ResponseEntity<List<Map<String, Object>>> response = statsController.getRecentActivity(session);
+
+        // Validate response
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertNotNull(response.getBody());
+        assertEquals(1, response.getBody().size());
+        assertEquals("Another activity", response.getBody().get(0).get("activity"));
+    }
+
 }
