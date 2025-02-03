@@ -19,7 +19,7 @@ public interface IUserService {
     void updateProfile(Long userId, UserProfileDTO profileDTO);
 
     void deactivateAccount(Long userId);
-    void deleteAccount(Long userId);
+    void deleteAccount(Long userId,String userType);
     boolean isAccountActive(String email);
     void reactivateAccount(String email);
 

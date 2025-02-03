@@ -1,6 +1,7 @@
 package com.quick_park_assist.controllerTest;
 
 import com.quick_park_assist.controller.AuthController;
+import com.quick_park_assist.controller.VehicleController;
 import com.quick_park_assist.entity.User;
 import com.quick_park_assist.repository.UserRepository;
 import com.quick_park_assist.service.IOTPService;
@@ -9,7 +10,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.ui.Model;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
@@ -86,6 +89,18 @@ class AuthControllerTest {
 
         assertEquals("redirect:/auth/forgot", viewName);
         verify(redirectAttributes).addFlashAttribute("errorMessage", "Please wait before requesting a new code");
+    }
+    @Test
+    void testForgotPassword_RuntimeException() {
+        String email = "test@example.com";
+        AuthController spyController = Mockito.spy(authController);
+        when(userRepository.findByEmail(email)).thenReturn(Optional.of(new User()));
+        doThrow(new RuntimeException("Error")).when(spyController).isOtpResendTooSoon(session);
+
+        String viewName = spyController.forgotPassword(email, redirectAttributes, session, model);
+
+        assertEquals("redirect:/auth/forgot", viewName);
+        verify(redirectAttributes).addFlashAttribute("errorMessage", "An unexpected error occurred. Please try again.");
     }
 
     @Test

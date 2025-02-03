@@ -11,4 +11,6 @@ public interface ServiceRepository extends JpaRepository<ServiceEntity, Long> {
     Optional<ServiceEntity> findByIdAndUserId(Long id, Long userId);
 
     boolean existsServiceEntityByNameIgnoreCase(String name);
+
+    void deleteAllByUserId(Long userId);
 }

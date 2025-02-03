@@ -96,7 +96,8 @@ public class UserController {
             // Custom password match validation
             passwordMatchValidator.validate(userDTO, result);
 
-            // Log validation state after password validation
+
+                // Log validation state after password validation
             log.info("Validation errors after password check: {}", result.hasErrors());
 
             if (result.hasErrors()) {
@@ -106,10 +107,14 @@ public class UserController {
             // Check for existing email and phone
             if (userService.isEmailTaken(userDTO.getEmail())) {
                 result.rejectValue(EMAIL, "email.exists", "Email already registered");
+                return REGISTRATION;
             }
             if (userService.isPhoneNumberTaken(userDTO.getPhoneNumber())) {
                 result.rejectValue("phoneNumber", "phone.exists", "Phone number already registered");
                 return REGISTRATION;
+            }
+            if (!userDTO.getPassword().matches("^(?=.*[0-9])(?=.*[a-zA-Z])(?=.*[@#$%^&+=]).*$") || userDTO.getPassword().length() < 6 ) {
+                result.rejectValue("password","weak Password","Password must be at least 6 characters and contain at least one letter, one number, and one special character");
             }
 
             // Add this check for validation errors
@@ -148,6 +153,7 @@ public class UserController {
             return REDIRECT_REGISTER;
         }
 
+
         // Get or initialize OTP attempts counter
         Integer attempts = (Integer) session.getAttribute(OTP_ATTEMPTS);
         if (attempts == null) {
@@ -167,7 +173,7 @@ public class UserController {
             session.removeAttribute(PENDING_REGISTRATION);
             session.removeAttribute(OTP_ATTEMPTS);
 
-            return REDIRECT_DASHBOARD;
+            return REDIRECT_LOGIN;
         } else {
             // Increment attempts counter
             attempts++;
@@ -421,7 +427,7 @@ public class UserController {
             return REDIRECT_LOGIN;
         }
         try {
-            userService.deleteAccount(userId);
+            userService.deleteAccount(userId,session.getAttribute(USER_TYPE).toString());
             session.invalidate();
             redirectAttributes.addFlashAttribute(SUCCESS_MESSAGE, "Account deleted successfully");
             return REDIRECT_LOGIN;
@@ -433,6 +439,7 @@ public class UserController {
 
     @GetMapping("/profile/change-password")
     public String showChangePasswordForm() {
+
         return "changePassword";
     }
 

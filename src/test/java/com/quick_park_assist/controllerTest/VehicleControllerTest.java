@@ -1,6 +1,6 @@
 package com.quick_park_assist.controllerTest;
 
-import com.mysql.cj.Session;
+
 import com.quick_park_assist.controller.VehicleController;
 import com.quick_park_assist.dto.VehicleDTO;
 import com.quick_park_assist.entity.Vehicle;
@@ -13,10 +13,10 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
-import org.springframework.mock.web.MockHttpSession;
+
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.context.annotation.SessionScope;
+
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.ArrayList;
@@ -336,7 +336,6 @@ class VehicleControllerTest {
 	@Test
 	void testShowEditForm_nullUser() {
 		Long vehicleId = 1L;
-		VehicleDTO vehicleDTO = new VehicleDTO();
 		when(bindingResult.hasErrors()).thenReturn(false);
 		when(session.getAttribute("userId")).thenReturn(null);
 

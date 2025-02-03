@@ -35,4 +35,6 @@ public interface VehicleRepository extends JpaRepository<Vehicle, Long> {
 
     @Query("SELECT vehicleNumber FROM Vehicle v WHERE v.user.id = :userId AND v.ev = true ")
     List<String> findEVVehicles(Long userId);
+
+    void deleteAllByUserId(Long userId);
 }

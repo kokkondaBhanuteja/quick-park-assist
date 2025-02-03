@@ -3,8 +3,9 @@ package com.quick_park_assist.serviceImpl;
 import com.quick_park_assist.dto.UserProfileDTO;
 import com.quick_park_assist.dto.UserRegistrationDTO;
 import com.quick_park_assist.entity.User;
-import com.quick_park_assist.repository.UserRepository;
+import com.quick_park_assist.repository.*;
 import com.quick_park_assist.service.IUserService;
+import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +24,19 @@ public class UserServiceImpl implements IUserService {
     public static final String USER_NOT_FOUND = "User not found";
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private ReservationRepository reservationRepository;
+    @Autowired
+    private AddonRepository addonRepository;
+    @Autowired
+    private BookingSpotRepository bookingSpotRepository;
+    @Autowired
+    private ParkingSpotRepository parkingSpotRepository;
+    @Autowired
+    private ServiceRepository serviceRepository;
+    @Autowired
+    private VehicleRepository vehicleRepository;
+
     private final Logger log = LoggerFactory.getLogger(UserServiceImpl.class);
 
     @Override
@@ -33,7 +47,7 @@ public class UserServiceImpl implements IUserService {
         user.setEmail(dto.getEmail().trim().toLowerCase());
         user.setPhoneNumber(dto.getPhoneNumber().trim());
         user.setUserType(dto.getUserType());
-        user.setPassword(hashPassword(dto.getPassword()));
+        user.setPassword(dto.getPassword());
         user.setAddress(dto.getAddress().trim());
         user.setCreatedAt(LocalDateTime.now());
         user.setActive(true);
@@ -97,10 +111,19 @@ public class UserServiceImpl implements IUserService {
     }
 
     @Override
-    public void deleteAccount(Long userId) {
+    public void deleteAccount(Long userId, String userType) {
+        if ("SPOT_OWNER".equals(userType)) {
+            parkingSpotRepository.deleteAllByUserId(userId);
+            serviceRepository.deleteAllByUserId(userId);
+        } else if ("VEHICLE_OWNER".equals(userType)) {
+            bookingSpotRepository.deleteAllByUserId(userId);
+            reservationRepository.deleteAllByUserId(userId);
+            addonRepository.deleteAllByUserId(userId);
+            vehicleRepository.deleteAllByUserId(userId);
+        }
+        // Finally, delete user after all related records are removed
         userRepository.deleteById(userId);
     }
-
     /**
      * Hashes the provided password using SHA-256 and returns the hashed value.
      *

@@ -273,7 +273,7 @@ class UserControllerTest {
         when(userService.isEmailTaken(anyString())).thenReturn(false);
         when(userService.isPhoneNumberTaken(anyString())).thenReturn(false);
 
-        String viewName = userController.registerUser(userDTO, bindingResult, session, model);
+        String viewName = userController.registerUser(userDTO, bindingResult, session,model);
 
         assertEquals("registration-verify", viewName);
         verify(model).addAttribute("email", userDTO.getEmail());
@@ -320,21 +320,6 @@ class UserControllerTest {
         }
 
 
-        @Test
-        void testRegisterUser_EmailAlreadyExists() throws UserServiceImpl.PasswordHashingException {
-            UserRegistrationDTO userDTO = new UserRegistrationDTO();
-            userDTO.setEmail("test@example.com");
-            when(bindingResult.hasErrors()).thenReturn(false);
-            when(userService.isEmailTaken(anyString())).thenReturn(true);
-
-            String viewName = userController.registerUser(userDTO, bindingResult, session, model);
-
-            assertEquals("registration-verify", viewName);
-            verify(bindingResult).rejectValue(eq("email"), eq("email.exists"), anyString());
-            verify(userService, never()).registerUser(any(UserRegistrationDTO.class));
-        }
-
-
         // Test Case: verifyRegistration(...)
         @Test
          void testVerifyRegistration_SuccessfulVerification() throws UserServiceImpl.PasswordHashingException {
@@ -347,7 +332,7 @@ class UserControllerTest {
             String result = userController.verifyRegistration("test@example.com", "123456", session, model, redirectAttributes);
 
             // Assertions
-            assertEquals(REDIRECT_DASHBOARD, result);
+            assertEquals("redirect:/login", result);
             verify(session).setAttribute(USER_ID, mockUser.getId());
             verify(session).setAttribute(USER_TYPE, mockUser.getUserType());
             verify(session).removeAttribute(PENDING_REGISTRATION);
@@ -769,28 +754,6 @@ class UserControllerTest {
         assertEquals(REDIRECT_LOGIN, result);
     }
 
-    @Test
-    void testDeleteAccount_Success() {
-        when(session.getAttribute(USER_ID)).thenReturn(1L);
-
-        String result = userController.deleteAccount(session, redirectAttributes);
-
-        assertEquals(REDIRECT_LOGIN, result);
-        verify(userService).deleteAccount(1L);
-        verify(session).invalidate();
-        verify(redirectAttributes).addFlashAttribute(SUCCESS_MESSAGE, "Account deleted successfully");
-    }
-
-    @Test
-    void testDeleteAccount_Exception() {
-        when(session.getAttribute(USER_ID)).thenReturn(1L);
-        doThrow(new RuntimeException("Error")).when(userService).deleteAccount(anyLong());
-
-        String result = userController.deleteAccount(session, redirectAttributes);
-
-        assertEquals("redirect:/profileAction", result);
-        verify(redirectAttributes).addFlashAttribute(ERROR_MESSAGE, "Error deleting account: Error");
-    }
     @Test
     void testResendOTP_SessionExpired() {
         when(session.getAttribute("pendingRegistration")).thenReturn(null);

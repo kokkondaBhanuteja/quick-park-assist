@@ -55,4 +55,6 @@ public interface BookingSpotRepository extends JpaRepository<BookingSpot, Long> 
 
     @Query("SELECT COALESCE(SUM(b.estimatedPrice), 0) FROM BookingSpot b WHERE b.spotID.user.id = :ownerId")
     Double calculateTotalRevenueByOwner(@Param("ownerId") Long ownerId);
+
+    void deleteAllByUserId(Long userId);
 }

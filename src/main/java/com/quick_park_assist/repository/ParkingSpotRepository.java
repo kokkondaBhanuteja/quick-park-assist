@@ -7,7 +7,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import java.net.ContentHandler;
 import java.util.List;
 import java.util.Map;
 
@@ -39,4 +38,6 @@ public interface ParkingSpotRepository extends JpaRepository<ParkingSpot, Long> 
     @Query("SELECT new map(p.id as id, p.spotLocation as spotName, p.spotType as spotType, p.location as Location, p.pricePerHour as pricePerHour) " +
             "FROM ParkingSpot p WHERE p.user.id = :userId ")
     Page<Map<String, Object>> getRecentActivityByUserId(@Param("userId")Long userId, Pageable pageable);
+
+    void deleteAllByUserId(Long userId);
 }

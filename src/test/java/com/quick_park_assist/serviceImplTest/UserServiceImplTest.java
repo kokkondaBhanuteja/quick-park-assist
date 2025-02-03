@@ -214,7 +214,7 @@ class UserServiceImplTest {
         Long userId = 1L;
 
         // Act
-        userService.deleteAccount(userId);
+        userService.deleteAccount(userId,anyString());
 
         // Assert
         verify(userRepository, times(1)).deleteById(userId);

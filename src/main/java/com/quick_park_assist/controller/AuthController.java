@@ -35,7 +35,7 @@ public class AuthController {
     @Autowired
     private IOTPService otpService;
     @Autowired
-    UserRepository userRepository;
+    public UserRepository userRepository;
     @GetMapping("/forgot")
     public String showForgotPasswordForm(){
         return "forgotPassword";
@@ -71,7 +71,7 @@ public class AuthController {
             }
 
         } catch (RuntimeException e) {
-            log.error("Error during forgotPassword process", e);
+            log.error("Error during forgotPassword process {}", e.getMessage());
             redirectAttributes.addFlashAttribute(ERROR_MESSAGE, "An unexpected error occurred. Please try again.");
         }
 
@@ -84,7 +84,7 @@ public class AuthController {
      * @param session The current HTTP session
      * @return true if the request is too soon, false otherwise
      */
-    private boolean isOtpResendTooSoon(HttpSession session) {
+    public boolean isOtpResendTooSoon(HttpSession session) {
         Long lastResendTime = (Long) session.getAttribute("lastOtpResendTime");
         if (lastResendTime == null) {
             return false;

@@ -20,6 +20,8 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
     @Query("SELECT CASE WHEN COUNT(r) > 0 THEN false ELSE true END " +
             "FROM Reservation r WHERE r.vehicleNumber = :vehicleNumber AND r.reservationTime = :reservationTime")
     boolean isTimeSlotAvailable(@Param("reservationTime") Date reservationTime, @Param("vehicleNumber") String vehicleNumber);
+
+    void deleteAllByUserId(Long userId);
  /*   @Query("SELECT COUNT(DISTINCT r.user.id) FROM Reservation r WHERE r.parkingSpot.user.id = :userId")
     int countUniqueCustomersByOwner(Long userId);
 */

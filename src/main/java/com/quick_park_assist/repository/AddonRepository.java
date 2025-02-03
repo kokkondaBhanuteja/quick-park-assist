@@ -9,4 +9,5 @@ import java.util.List;
 public interface AddonRepository extends JpaRepository<AddonService, Long> {
     List<AddonService> findByUserId(Long userId);
 
+    void deleteAllByUserId(Long userId);
 }
