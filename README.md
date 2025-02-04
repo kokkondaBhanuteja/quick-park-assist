@@ -299,6 +299,48 @@ splunk.hec.token=your-hec-token
 -  Open Splunk UI and search logs with index="yourIndexName".
 ![Splunk](./images/splunk.jpeg)
 
+**Graphana Integration**
+-  Download and Install graphana from the website https://grafana.com/grafana/download
+- After installation Open Browser and navigate to http://localhost:3000
+![GRAPHANA DASHBOARD](./images/graphanaDashboard.png)
+
+
+*Prometheus Integration*
+-  Download Prometheus from the website https://prometheus.io/download/
+- Unzip and Configure the prometheus.yml File
+```sh
+  - job_name: "spring-actuator"
+    metrics_path: "/actuator/prometheus"
+    scrape_interval: 5s
+    static_configs:
+      - targets: ["localhost:8081"]
+```
+-  Now After teh configuring the File now Run the Prometheus Server(`prometheus.exe`).
+- Now for prometheus we need to add some dependencies like:
+```sh
+        <dependency>
+			<groupId>io.micrometer</groupId>
+			<artifactId>micrometer-registry-prometheus</artifactId>
+		</dependency>
+		
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-actuator</artifactId>
+				<exclusions>
+					<exclusion>
+						<groupId>ch.qos.logback</groupId>
+						<artifactId>logback-classic</artifactId>
+					</exclusion>
+				</exclusions>
+		</dependency>
+```
+-   After adding the dependencies.Open browser and navigate to http://localhost:9090 where prometheus is Running
+
+***Prometheus and Graphana Integration***
+-   After running the Open graphana Dashboard and import a readymade JSON file for springBoot and use prometheus as a data-source.
+- After that we can see a springBoot Dashboard which looks like this:
+![Project DashBoard](./images/projectDasboard.png)
+
 ## Future Enhancements
 - Implement AI-based dynamic pricing for parking spots.
 - Develop a mobile application for better accessibility.
