@@ -20,6 +20,6 @@ public class ParkingSpotServiceImpl implements IParkingSpotService {
      * @return List of available ParkingSpot objects
      */
     public List<ParkingSpot> getAllAvailableSpots(String searchQuery) {
-        return parkingSpotRepository.findByAvailabilityIgnoreCaseAndSpotLocationContainingIgnoreCaseOrLocationContainingIgnoreCaseAndSpotTypeNot("available",searchQuery,searchQuery,"EV_SPOT");
+        return parkingSpotRepository.findByAvailabilityIgnoreCaseAndSpotLocationContainingIgnoreCaseOrLocationContainingIgnoreCase("available",searchQuery,searchQuery);
     }
 }

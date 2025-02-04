@@ -95,7 +95,7 @@ public class ParkingSpotController {
     @ResponseBody
     public List<ParkingSpot> searchLocations(@RequestParam(value = "query", required = false) String query) {
         return query != null && !query.isEmpty()
-                ? parkingSpotRepository.findByAvailabilityIgnoreCaseAndSpotLocationContainingIgnoreCaseOrLocationContainingIgnoreCaseAndSpotTypeNot(AVAILABLE,query,query, EV_SPOT)
+                ? parkingSpotRepository.findByAvailabilityIgnoreCaseAndSpotLocationContainingIgnoreCaseOrLocationContainingIgnoreCase(AVAILABLE,query,query)
                 : new ArrayList<>();
     }
 
@@ -122,10 +122,10 @@ public class ParkingSpotController {
         List<ParkingSpot> parkingSpots;
         try {
             if ("all".equalsIgnoreCase(availability)) {
-                parkingSpots = parkingSpotRepository.findByLocationContainingIgnoreCaseAndSpotTypeNot(location, EV_SPOT);
+                parkingSpots = parkingSpotRepository.findByLocationContainingIgnoreCase(location);
             } else {
-                parkingSpots = parkingSpotRepository.findByLocationContainingIgnoreCaseAndAvailabilityIgnoreCaseAndSpotTypeNot(
-                        location, AVAILABLE.equalsIgnoreCase(availability) ? AVAILABLE : "Unavailable", EV_SPOT);
+                parkingSpots = parkingSpotRepository.findByLocationContainingIgnoreCaseAndAvailabilityIgnoreCase(
+                        location, AVAILABLE.equalsIgnoreCase(availability) ? AVAILABLE : "Unavailable");
             }
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute(ERROR_MESSAGE, "An error occurred while searching for parking spots.");

@@ -189,16 +189,16 @@ public class ParkingSpotUnitTest {
         // Arrange
         String query = "Location1";
         List<ParkingSpot> expectedSpots = List.of(new ParkingSpot(), new ParkingSpot());
-        when(parkingSpotRepository.findByAvailabilityIgnoreCaseAndSpotLocationContainingIgnoreCaseOrLocationContainingIgnoreCaseAndSpotTypeNot(
-                "Available", query, query, "EV_SPOT")).thenReturn(expectedSpots);
+        when(parkingSpotRepository.findByAvailabilityIgnoreCaseAndSpotLocationContainingIgnoreCaseOrLocationContainingIgnoreCase(
+                "Available", query, query)).thenReturn(expectedSpots);
 
         // Act
         List<ParkingSpot> result = parkingSpotController.searchLocations(query);
 
         // Assert
         assertEquals(expectedSpots.size(), result.size());
-        verify(parkingSpotRepository).findByAvailabilityIgnoreCaseAndSpotLocationContainingIgnoreCaseOrLocationContainingIgnoreCaseAndSpotTypeNot(
-                "Available", query, query, "EV_SPOT");
+        verify(parkingSpotRepository).findByAvailabilityIgnoreCaseAndSpotLocationContainingIgnoreCaseOrLocationContainingIgnoreCase(
+                "Available", query, query);
     }
 
     @Test
@@ -241,8 +241,8 @@ public class ParkingSpotUnitTest {
         String location = "Location1";
         when(session.getAttribute("userId")).thenReturn(1L);
         List<ParkingSpot> parkingSpots = List.of(new ParkingSpot());
-        when(parkingSpotRepository.findByLocationContainingIgnoreCaseAndAvailabilityIgnoreCaseAndSpotTypeNot(
-                location, "Available", "EV_SPOT")).thenReturn(parkingSpots);
+        when(parkingSpotRepository.findByLocationContainingIgnoreCaseAndAvailabilityIgnoreCase(
+                location, "Available")).thenReturn(parkingSpots);
 
         // Act
         String viewName = parkingSpotController.showSearchParkingSpotsForm(location, "Available", model, session, redirectAttributes);
@@ -276,8 +276,8 @@ public class ParkingSpotUnitTest {
         String location = "Location1";
         String availability = "Available";
         when(session.getAttribute("userId")).thenReturn(1L);
-        when(parkingSpotRepository.findByLocationContainingIgnoreCaseAndAvailabilityIgnoreCaseAndSpotTypeNot(
-                location, availability, "EV_SPOT")).thenReturn(List.of());
+        when(parkingSpotRepository.findByLocationContainingIgnoreCaseAndAvailabilityIgnoreCase(
+                location, availability)).thenReturn(List.of());
 
         // Act
         String viewName = parkingSpotController.showSearchParkingSpotsForm(location, availability, model, session, redirectAttributes);
@@ -293,8 +293,8 @@ public class ParkingSpotUnitTest {
         String location = "Location1";
         String availability = "Available";
         when(session.getAttribute("userId")).thenReturn(1L);
-        when(parkingSpotRepository.findByLocationContainingIgnoreCaseAndAvailabilityIgnoreCaseAndSpotTypeNot(
-                location, availability, "EV_SPOT")).thenThrow(new RuntimeException("Database error"));
+        when(parkingSpotRepository.findByLocationContainingIgnoreCaseAndAvailabilityIgnoreCase(
+                location, availability)).thenThrow(new RuntimeException("Database error"));
 
         // Act
         String viewName = parkingSpotController.showSearchParkingSpotsForm(location, availability, model, session, redirectAttributes);

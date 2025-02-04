@@ -190,7 +190,7 @@
         "#4CAF50", "#2196F3", "#FF9800", "#E91E63", "#9C27B0", "#00BCD4"
     ];
     const cards = document.querySelectorAll('.addon-card');
-
+    let chosenCard = 0;//stores numeric Value
     // Randomize card colors and add click event
     cards.forEach(card => {
         const randomColor = colors[Math.floor(Math.random() * colors.length)];
@@ -200,28 +200,32 @@
         card.addEventListener('click', () => {
             const serviceName = card.querySelector('.service-name').textContent;
             const servicePrice = parseFloat(card.querySelector('.service-price').textContent || 0);
-            const serviceId = parseInt(card.querySelector('.service-id').value);
+            const serviceId = parseInt(card.querySelector('.service-id').value,10);
             // Populate input fields
             document.getElementById('serviceName').value = serviceName;
             document.getElementById('serviceId').value = serviceId; // Set the serviceId
             document.getElementById('price').value = servicePrice.toFixed(2);
             document.getElementById('duration').value = 1; // Default duration is 1 hour
-            document.getElementById('calculatedPrice').value = servicePrice.toFixed(2); // Default price for 1 hour
+            chosenCard = servicePrice
+            console.log(chosenCard);
+            console.log(duration);
+
+
         });
     });
 
     // Dynamically calculate price based on duration
     const durationInput = document.getElementById('duration');
     durationInput.addEventListener('input', () => {
-        const basePrice = parseFloat(document.getElementById('price').value || 0);
+        const basePrice = parseFloat(chosenCard || 0);
         const duration = parseInt(durationInput.value || 0, 10);
 
-        if (!isNaN(basePrice) && !isNaN(duration)) {
-            const totalPrice = basePrice * duration; // Calculate total price
-            document.getElementById('price').value = totalPrice.toFixed(2);
-        } else {
-            document.getElementById('price').value = "0.00";
+        // Prevent invalid duration values
+        if (isNaN(duration) || duration <= 0) {
+            duration.value = 1; // Default to 1 hour if invalid
         }
+        const totalPrice = basePrice * duration; // Calculate total price
+    document.getElementById('price').value = totalPrice.toFixed(2);
     });
 });
 

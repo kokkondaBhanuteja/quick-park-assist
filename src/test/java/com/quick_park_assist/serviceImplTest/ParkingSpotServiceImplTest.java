@@ -37,8 +37,8 @@ class ParkingSpotServiceImplTest {
         mockSpots.add(new ParkingSpot());
         mockSpots.add(new ParkingSpot());
 
-        when(parkingSpotRepository.findByAvailabilityIgnoreCaseAndSpotLocationContainingIgnoreCaseOrLocationContainingIgnoreCaseAndSpotTypeNot(
-                "available", searchQuery, searchQuery, "EV_SPOT"))
+        when(parkingSpotRepository.findByAvailabilityIgnoreCaseAndSpotLocationContainingIgnoreCaseOrLocationContainingIgnoreCase(
+                "available", searchQuery, searchQuery))
                 .thenReturn(mockSpots);
 
         // Act
@@ -46,16 +46,16 @@ class ParkingSpotServiceImplTest {
 
         // Assert
         assertEquals(2, result.size());
-        verify(parkingSpotRepository, times(1)).findByAvailabilityIgnoreCaseAndSpotLocationContainingIgnoreCaseOrLocationContainingIgnoreCaseAndSpotTypeNot(
-                "available", searchQuery, searchQuery, "EV_SPOT");
+        verify(parkingSpotRepository, times(1)).findByAvailabilityIgnoreCaseAndSpotLocationContainingIgnoreCaseOrLocationContainingIgnoreCase(
+                "available", searchQuery, searchQuery);
     }
 
     @Test
     void testGetAllAvailableSpots_WithNoMatchingSpots() {
         // Arrange
         String searchQuery = "Nonexistent Location";
-        when(parkingSpotRepository.findByAvailabilityIgnoreCaseAndSpotLocationContainingIgnoreCaseOrLocationContainingIgnoreCaseAndSpotTypeNot(
-                "available", searchQuery, searchQuery, "EV_SPOT"))
+        when(parkingSpotRepository.findByAvailabilityIgnoreCaseAndSpotLocationContainingIgnoreCaseOrLocationContainingIgnoreCase(
+                "available", searchQuery, searchQuery))
                 .thenReturn(new ArrayList<>());
 
         // Act
@@ -63,8 +63,8 @@ class ParkingSpotServiceImplTest {
 
         // Assert
         assertEquals(0, result.size());
-        verify(parkingSpotRepository, times(1)).findByAvailabilityIgnoreCaseAndSpotLocationContainingIgnoreCaseOrLocationContainingIgnoreCaseAndSpotTypeNot(
-                "available", searchQuery, searchQuery, "EV_SPOT");
+        verify(parkingSpotRepository, times(1)).findByAvailabilityIgnoreCaseAndSpotLocationContainingIgnoreCaseOrLocationContainingIgnoreCase(
+                "available", searchQuery, searchQuery);
     }
 
     @Test
@@ -74,8 +74,8 @@ class ParkingSpotServiceImplTest {
         List<ParkingSpot> mockSpots = new ArrayList<>();
         mockSpots.add(new ParkingSpot());
 
-        when(parkingSpotRepository.findByAvailabilityIgnoreCaseAndSpotLocationContainingIgnoreCaseOrLocationContainingIgnoreCaseAndSpotTypeNot(
-                "available", searchQuery, searchQuery, "EV_SPOT"))
+        when(parkingSpotRepository.findByAvailabilityIgnoreCaseAndSpotLocationContainingIgnoreCaseOrLocationContainingIgnoreCase(
+                "available", searchQuery, searchQuery))
                 .thenReturn(mockSpots);
 
         // Act
@@ -83,8 +83,8 @@ class ParkingSpotServiceImplTest {
 
         // Assert
         assertEquals(1, result.size());
-        verify(parkingSpotRepository, times(1)).findByAvailabilityIgnoreCaseAndSpotLocationContainingIgnoreCaseOrLocationContainingIgnoreCaseAndSpotTypeNot(
-                "available", searchQuery, searchQuery, "EV_SPOT");
+        verify(parkingSpotRepository, times(1)).findByAvailabilityIgnoreCaseAndSpotLocationContainingIgnoreCaseOrLocationContainingIgnoreCase(
+                "available", searchQuery, searchQuery);
     }
 
     @Test
@@ -94,8 +94,8 @@ class ParkingSpotServiceImplTest {
         List<ParkingSpot> mockSpots = new ArrayList<>();
         mockSpots.add(new ParkingSpot());
 
-        when(parkingSpotRepository.findByAvailabilityIgnoreCaseAndSpotLocationContainingIgnoreCaseOrLocationContainingIgnoreCaseAndSpotTypeNot(
-                "available", searchQuery, searchQuery, "EV_SPOT"))
+        when(parkingSpotRepository.findByAvailabilityIgnoreCaseAndSpotLocationContainingIgnoreCaseOrLocationContainingIgnoreCase(
+                "available", searchQuery, searchQuery))
                 .thenReturn(mockSpots);
 
         // Act
@@ -103,8 +103,8 @@ class ParkingSpotServiceImplTest {
 
         // Assert
         assertEquals(1, result.size());
-        verify(parkingSpotRepository, times(1)).findByAvailabilityIgnoreCaseAndSpotLocationContainingIgnoreCaseOrLocationContainingIgnoreCaseAndSpotTypeNot(
-                "available", searchQuery, searchQuery, "EV_SPOT");
+        verify(parkingSpotRepository, times(1)).findByAvailabilityIgnoreCaseAndSpotLocationContainingIgnoreCaseOrLocationContainingIgnoreCase(
+                "available", searchQuery, searchQuery);
     }
 }
 

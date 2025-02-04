@@ -18,15 +18,15 @@ public interface ParkingSpotRepository extends JpaRepository<ParkingSpot, Long> 
     int countEvSpotsByOwner(Long userId);
 
     // 1. Find by location (case-insensitive) and spotType not equal to "EV_SPOT"
-    List<ParkingSpot> findByLocationContainingIgnoreCaseAndSpotTypeNot(String location, String spotType);
+    List<ParkingSpot> findByLocationContainingIgnoreCase(String location);
 
     // 2. Find by location, availability, and spotType not equal to "EV_SPOT"
-    List<ParkingSpot> findByLocationContainingIgnoreCaseAndAvailabilityIgnoreCaseAndSpotTypeNot(
-            String location, String availability, String spotType);
+    List<ParkingSpot> findByLocationContainingIgnoreCaseAndAvailabilityIgnoreCase(
+            String location, String availability);
 
     // 3. Find by availability and spotLocation or location (both case-insensitive), and spotType not equal to "EV_SPOT"
-    List<ParkingSpot> findByAvailabilityIgnoreCaseAndSpotLocationContainingIgnoreCaseOrLocationContainingIgnoreCaseAndSpotTypeNot(
-            String availability, String spotLocation, String location, String spotType);
+    List<ParkingSpot> findByAvailabilityIgnoreCaseAndSpotLocationContainingIgnoreCaseOrLocationContainingIgnoreCase(
+            String availability, String spotLocation, String location);
     boolean existsParkingSpotBySpotLocationIgnoreCaseAndLocationIgnoreCase(String spotLocation,String Location);
     List<ParkingSpot> findByUserId(Long userId);
     List<ParkingSpot> findByAvailabilityIgnoreCaseAndSpotLocationContainingIgnoreCaseOrLocationContainingIgnoreCaseAndSpotType(
