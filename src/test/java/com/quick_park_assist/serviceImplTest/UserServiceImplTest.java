@@ -4,7 +4,7 @@ package com.quick_park_assist.serviceImplTest;
 import com.quick_park_assist.dto.UserProfileDTO;
 import com.quick_park_assist.dto.UserRegistrationDTO;
 import com.quick_park_assist.entity.User;
-import com.quick_park_assist.repository.UserRepository;
+import com.quick_park_assist.repository.*;
 import com.quick_park_assist.service.IOTPService;
 import com.quick_park_assist.serviceImpl.UserServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
@@ -27,10 +27,25 @@ class UserServiceImplTest {
 
     @Mock
     private UserRepository userRepository;
+    @Mock
+    private VehicleRepository vehicleRepository;
+    @Mock
+    private BookingSpotRepository bookingSpotRepository;
+    @Mock
+    private ParkingSpotRepository parkingSpotRepository;
+    @Mock
+    private AddonRepository addonRepository;
+    @Mock
+    private ServiceRepository serviceRepository;
+    @Mock
+    private ReservationRepository reservationRepository;
+
+
     @Autowired
     private IOTPService otpService;
     private User activeUser;
     private User inactiveUser;
+    private final Long userId = 1L;
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
@@ -336,6 +351,32 @@ class UserServiceImplTest {
         verify(userRepository, times(1)).findByEmail("unknown@example.com");
         verify(userRepository, times(0)).save(any(User.class)); // Ensure no save attempt was made
     }
+    @Test
+    void testDeleteAccountForSpotOwner() {
+        userService.deleteAccount(userId, "SPOT_OWNER");
 
+        verify(parkingSpotRepository, times(1)).deleteAllByUserId(userId);
+        verify(serviceRepository, times(1)).deleteAllByUserId(userId);
+        verify(userRepository, times(1)).deleteById(userId);
+    }
+
+    @Test
+    void testDeleteAccountForVehicleOwner() {
+        userService.deleteAccount(userId, "VEHICLE_OWNER");
+
+        verify(bookingSpotRepository, times(1)).deleteAllByUserId(userId);
+        verify(reservationRepository, times(1)).deleteAllByUserId(userId);
+        verify(addonRepository, times(1)).deleteAllByUserId(userId);
+        verify(vehicleRepository, times(1)).deleteAllByUserId(userId);
+        verify(userRepository, times(1)).deleteById(userId);
+    }
+
+    @Test
+    void testDeleteAccountForUnknownUserType() {
+        userService.deleteAccount(userId, "UNKNOWN_TYPE");
+
+        verifyNoInteractions(parkingSpotRepository, serviceRepository, bookingSpotRepository, reservationRepository, addonRepository, vehicleRepository);
+        verify(userRepository, times(1)).deleteById(userId);
+    }
 }
 
