@@ -15,6 +15,7 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.ui.Model;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -429,4 +430,90 @@ public class ParkingSpotUnitTest {
         // Assert
         assertEquals("redirect:/smart-spots/update-spot", viewName);
         verify(redirectAttributes).addFlashAttribute("successMessage", "Parking spot updated successfully!");
-    }}
+    }
+    @Test
+    void testUpdateParkingSpot_Success() {
+        when(updateParkingSpotService.updateParkingSpot(1L, "Available", 10.0, "Compact", "Near Entrance"))
+                .thenReturn(true);
+
+        String result = parkingSpotController.updateParkingSpot(1L, "Available", 10.0, "Compact", "Near Entrance", redirectAttributes, model);
+
+        assertEquals("redirect:/smart-spots/update-spot", result);
+        verify(redirectAttributes).addFlashAttribute("successMessage", "Parking spot updated successfully!");
+    }
+
+    @Test
+    void testUpdateParkingSpot_Failure() {
+        when(updateParkingSpotService.updateParkingSpot(1L, "Unavailable", 5.0, "Large", "Back side"))
+                .thenReturn(false);
+
+        String result = parkingSpotController.updateParkingSpot(1L, "Unavailable", 5.0, "Large", "Back side", redirectAttributes, model);
+
+        assertEquals("redirect:/smart-spots/update-spot", result);
+        verify(redirectAttributes).addFlashAttribute("errorMessage", "Failed to update the parking spot, Try Again.");
+    }
+
+    @Test
+    void testUpdateParkingSpot_ExceptionHandling() {
+        when(updateParkingSpotService.updateParkingSpot(anyLong(), anyString(), anyDouble(), anyString(), anyString()))
+                .thenThrow(new RuntimeException("Unexpected Error"));
+
+        String result = parkingSpotController.updateParkingSpot(1L, "Available", 10.0, "Compact", "Near Entrance", redirectAttributes, model);
+
+        assertEquals("redirect:/smart-spots/update-spot", result);
+        // Exception is logged, no specific verification needed on the log
+    }
+
+    @Test
+    void testShowRemoveParkingSpot_UserNotLoggedIn() {
+        when(session.getAttribute("userId")).thenReturn(null);
+
+        String result = parkingSpotController.showRemoveParkingSpot(model, session, redirectAttributes);
+
+        assertEquals("redirect:/login", result);
+    }
+
+    @Test
+    void testShowRemoveParkingSpot_UserNotSpotOwner() {
+        when(session.getAttribute("userId")).thenReturn(1L);
+        when(session.getAttribute("userType")).thenReturn("VEHICLE_OWNER");
+
+        String result = parkingSpotController.showRemoveParkingSpot(model, session, redirectAttributes);
+
+        assertEquals("redirect:/smart-spots/search", result);
+    }
+
+    @Test
+    void testShowRemoveParkingSpot_NoSpotsFound() {
+        when(session.getAttribute("userId")).thenReturn(1L);
+        when(session.getAttribute("userType")).thenReturn("SPOT_OWNER");
+        when(updateParkingSpotService.getParkingSpotsForLoggedInUser(1L)).thenReturn(Collections.emptyList());
+
+        String result = parkingSpotController.showRemoveParkingSpot(model, session, redirectAttributes);
+
+        assertEquals("RemoveParkingSpot", result);
+        verify(redirectAttributes).addFlashAttribute("errorMessage", "Parking spot not found.");
+    }
+
+    @Test
+    void testShowRemoveParkingSpot_SpotsFound() {
+        ParkingSpot parkingSpot = new ParkingSpot();
+        User user = new User();
+        user.setId(1L);
+        parkingSpot.setUser(user);
+        parkingSpot.setSpotLocation("new Deli");
+        parkingSpot.setAdditionalInstructions("Near Entrance");
+        parkingSpot.setAvailability("Available");
+        parkingSpot.setPricePerHour(10.0);
+
+        List<ParkingSpot> mockSpots = List.of(parkingSpot);
+        when(session.getAttribute("userId")).thenReturn(1L);
+        when(session.getAttribute("userType")).thenReturn("SPOT_OWNER");
+        when(updateParkingSpotService.getParkingSpotsForLoggedInUser(1L)).thenReturn(mockSpots);
+
+        String result = parkingSpotController.showRemoveParkingSpot(model, session, redirectAttributes);
+
+        assertEquals("RemoveParkingSpot", result);
+        verify(model).addAttribute("parkingSpots", mockSpots);
+    }
+}
