@@ -136,4 +136,115 @@ public class AddonServiceImplTest {
         assertEquals(expectedList, result);
         verify(addonRepository).findByUserId(1L);
     }
+
+    @Test
+    void testGetAllAddons() {
+        when(addonRepository.findAll()).thenReturn(List.of(testAddon));
+        List<AddonService> result = addonServiceImpl.getAllAddons();
+        assert(result.size() == 1);
+        verify(addonRepository, times(1)).findAll();
+    }
+
+    @Test
+    void testSaveAddon() {
+        when(addonRepository.save(any(AddonService.class))).thenReturn(testAddon);
+        addonServiceImpl.saveAddon(testAddon);
+        verify(addonRepository, times(1)).save(testAddon);
+    }
+
+    @Test
+    void testGetAddonById() {
+        when(addonRepository.findById(1L)).thenReturn(Optional.of(testAddon));
+        Optional<AddonService> result = addonServiceImpl.getAddonById(1L);
+        assert(result.isPresent());
+        verify(addonRepository, times(1)).findById(1L);
+    }
+
+    @Test
+    void testGetAddonById_NotFound() {
+        when(addonRepository.findById(1L)).thenReturn(Optional.empty());
+        Optional<AddonService> result = addonServiceImpl.getAddonById(1L);
+        assert(result.isEmpty());
+        verify(addonRepository, times(1)).findById(1L);
+    }
+
+    @Test
+    void testDeleteAddonById() {
+        addonServiceImpl.deleteAddonById(1L);
+        verify(addonRepository, times(1)).deleteById(1L);
+    }
+
+    @Test
+    void testUpdateAddon() {
+        AddonService updatedAddon = new AddonService();
+        updatedAddon.setName("Updated Addon");
+        updatedAddon.setPrice(20.0);
+        updatedAddon.setDuration("60 minutes");
+
+        when(addonRepository.findById(1L)).thenReturn(Optional.of(testAddon));
+        addonServiceImpl.updateAddon(1L, updatedAddon);
+
+        verify(addonRepository, times(1)).save(any(AddonService.class));
+        assert(testAddon.getName().equals("Updated Addon"));
+        assert(testAddon.getPrice() == 20.0);
+        assert(testAddon.getDuration().equals("60 minutes"));
+    }
+
+    @Test
+    void testUpdateAddon_NotFound() {
+        AddonService updatedAddon = new AddonService();
+        updatedAddon.setName("Updated Addon");
+        updatedAddon.setPrice(20.0);
+        updatedAddon.setDuration("60 minutes");
+
+        when(addonRepository.findById(1L)).thenReturn(Optional.empty());
+        addonServiceImpl.updateAddon(1L, updatedAddon);
+
+        verify(addonRepository, never()).save(any(AddonService.class));
+    }
+
+    @Test
+    void testUpdateAddonDuration() {
+        when(addonRepository.findById(1L)).thenReturn(Optional.of(testAddon));
+        addonServiceImpl.updateAddonDuration(1L, "90 minutes", 30.0);
+        verify(addonRepository, times(1)).save(any(AddonService.class));
+        assert(testAddon.getDuration().equals("90 minutes"));
+        assert(testAddon.getPrice() == 30.0);
+    }
+
+    @Test
+    void testUpdateAddonDuration_NotFound() {
+        when(addonRepository.findById(1L)).thenReturn(Optional.empty());
+        addonServiceImpl.updateAddonDuration(1L, "90 minutes", 30.0);
+        verify(addonRepository, never()).save(any(AddonService.class));
+    }
+
+    @Test
+    void testGetAddonByUserId() {
+        Long userId = 1L;
+        when(addonRepository.findByUserId(userId)).thenReturn(List.of(testAddon));
+        List<AddonService> result = addonServiceImpl.getAddonByUserId(userId);
+        assert(result.size() == 1);
+        verify(addonRepository, times(1)).findByUserId(userId);
+    }
+
+    @Test
+    void testGetAddonByUserId_NoAddons() {
+        Long userId = 1L;
+        when(addonRepository.findByUserId(userId)).thenReturn(List.of());
+        List<AddonService> result = addonServiceImpl.getAddonByUserId(userId);
+        assert(result.isEmpty());
+        verify(addonRepository, times(1)).findByUserId(userId);
+    }
+
+    @Test
+    void testSaveAddon_NullFields() {
+        AddonService incompleteAddon = new AddonService();
+        incompleteAddon.setName(null);
+        incompleteAddon.setPrice(0.0);
+        incompleteAddon.setDuration(null);
+
+        addonServiceImpl.saveAddon(incompleteAddon);
+        verify(addonRepository, times(1)).save(incompleteAddon);
+    }
 }

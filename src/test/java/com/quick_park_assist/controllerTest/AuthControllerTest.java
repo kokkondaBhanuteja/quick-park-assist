@@ -385,7 +385,59 @@ class AuthControllerTest {
         assertEquals(REDIRECT_AUTH_CHANGE_PASSWORD, viewName);
         verify(redirectAttributes).addFlashAttribute(ERROR_MESSAGE, "Passwords do not match");
     }
+    @Test
+    void testChangePassword_EmptyCurrentPassword() {
+        Long userId = 1L;
+        String currentPassword = "";
+        String newPassword = "NewPass@123";
+        String confirmPassword = "NewPass@123";
 
+        when(session.getAttribute("userId")).thenReturn(userId);
+        User user = new User();
+        user.setPassword("actualPassword");
+        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
+
+        String viewName = authController.changePassword(currentPassword, newPassword, confirmPassword, session, redirectAttributes);
+
+        assertEquals(REDIRECT_AUTH_CHANGE_PASSWORD, viewName);
+        verify(redirectAttributes).addFlashAttribute(ERROR_MESSAGE, "Current password is incorrect");
+    }
+
+    @Test
+    void testChangePassword_UserNotFound() {
+        Long userId = 1L;
+        String currentPassword = "OldPass@123";
+        String newPassword = "NewPass@123";
+        String confirmPassword = "NewPass@123";
+
+        when(session.getAttribute("userId")).thenReturn(userId);
+        when(userRepository.findById(userId)).thenReturn(Optional.empty());
+
+        String viewName = authController.changePassword(currentPassword, newPassword, confirmPassword, session, redirectAttributes);
+
+        assertEquals(REDIRECT_AUTH_CHANGE_PASSWORD, viewName);
+        verify(redirectAttributes).addFlashAttribute(ERROR_MESSAGE, "Current password is incorrect");
+    }
+
+    @Test
+    void testChangePassword_NoLetterInNewPassword() {
+        Long userId = 1L;
+        String currentPassword = "OldPass@123";
+        String newPassword = "123@456";
+        String confirmPassword = "123@456";
+
+        User user = new User();
+        user.setPassword(currentPassword);
+
+        when(session.getAttribute("userId")).thenReturn(userId);
+        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
+
+        String viewName = authController.changePassword(currentPassword, newPassword, confirmPassword, session, redirectAttributes);
+
+        assertEquals(REDIRECT_AUTH_CHANGE_PASSWORD, viewName);
+        verify(redirectAttributes).addFlashAttribute(ERROR_MESSAGE,
+                "Password must be at least 6 characters and contain at least one letter, one number, and one special character");
+    }
     // Test case: Successful password change
 
 }

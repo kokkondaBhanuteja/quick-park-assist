@@ -336,5 +336,6 @@ class UserServiceImplTest {
         verify(userRepository, times(1)).findByEmail("unknown@example.com");
         verify(userRepository, times(0)).save(any(User.class)); // Ensure no save attempt was made
     }
+
 }
 

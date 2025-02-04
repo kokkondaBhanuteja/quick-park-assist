@@ -822,7 +822,192 @@ class UserControllerTest {
         verify(bindingResult).rejectValue("phoneNumber", "phone.exists", "Phone number already registered");
     }
 
+    @Test
+    void testShowChangePasswordForm_ReturnsCorrectView() {
+        String viewName = userController.showChangePasswordForm();
+        assertEquals("changePassword", viewName);
+    }
 
+    @Test
+    void testShowReactivationPage_ReturnsCorrectView() {
+        String viewName = userController.showReactivationPage();
+        assertEquals("reactivate", viewName);
+    }
+
+    @Test
+    void testDeleteAccount_Success() {
+        Long userId = 1L;
+        when(session.getAttribute(USER_ID)).thenReturn(userId);
+        when(session.getAttribute(USER_TYPE)).thenReturn("VEHICLE_OWNER");
+
+        String result = userController.deleteAccount(session, redirectAttributes);
+
+        assertEquals(REDIRECT_LOGIN, result);
+        verify(userService).deleteAccount(userId, "VEHICLE_OWNER");
+        verify(session).invalidate();
+        verify(redirectAttributes).addFlashAttribute(SUCCESS_MESSAGE, "Account deleted successfully");
+    }
+
+    @Test
+    void testDeleteAccount_ExceptionHandling() {
+        Long userId = 1L;
+        when(session.getAttribute(USER_ID)).thenReturn(userId);
+        when(session.getAttribute(USER_TYPE)).thenReturn("VEHICLE_OWNER");
+
+        doThrow(new RuntimeException("Delete error")).when(userService).deleteAccount(userId, "VEHICLE_OWNER");
+
+        String result = userController.deleteAccount(session, redirectAttributes);
+
+        assertEquals("redirect:/profileAction", result);
+        verify(redirectAttributes).addFlashAttribute(ERROR_MESSAGE, "Error deleting account: Delete error");
+    }
+
+    @Test
+    void testVerifyReactivation_MaxAttemptsExceeded() {
+        String email = "test@example.com";
+        String otp = "123456";
+
+        when(session.getAttribute(OTP_ATTEMPTS)).thenReturn(2);
+
+        String result = userController.verifyReactivation(email, otp, session, redirectAttributes);
+
+        assertEquals(REDIRECT_LOGIN, result);
+        verify(session).removeAttribute(OTP_ATTEMPTS);
+        verify(redirectAttributes).addFlashAttribute(ERROR_MESSAGE, "Too many incorrect attempts. Please try again.");
+    }
+
+
+
+
+    @Test
+    void testUpdateProfile_PhoneNumberValidation() {
+        UserProfileDTO profileDTO = new UserProfileDTO();
+        profileDTO.setPhoneNumber("invalid");
+
+        when(session.getAttribute(USER_ID)).thenReturn(1L);
+        when(bindingResult.hasErrors()).thenReturn(true);
+
+        String result = userController.updateProfile(profileDTO, bindingResult, session, redirectAttributes);
+
+        assertEquals("EditProfile", result);
+    }
+
+    @Test
+    void testViewProfile_SessionExpired() {
+        when(session.getAttribute(USER_ID)).thenReturn(null);
+
+        String result = userController.viewProfile(session, model);
+
+        assertEquals(REDIRECT_LOGIN, result);
+        verifyNoInteractions(userService, model);
+    }
+
+
+    @Test
+    void testRegisterUser_SystemException() {
+        UserRegistrationDTO userDTO = new UserRegistrationDTO();
+        userDTO.setEmail("test@example.com");
+
+        when(bindingResult.hasErrors()).thenReturn(false);
+        when(userService.isEmailTaken(anyString())).thenThrow(new RuntimeException("Database Error"));
+
+        String result = userController.registerUser(userDTO, bindingResult, session, model);
+
+        assertEquals(REGISTRATION, result);
+        verify(model).addAttribute(eq(ERROR_MESSAGE), contains("An error occurred"));
+    }
+
+    @Test
+    void testDashboard_InvalidUserType() {
+        when(session.getAttribute(USER_ID)).thenReturn(1L);
+        when(session.getAttribute(USER_TYPE)).thenReturn(null);
+        when(session.getAttribute(USER_FULL_NAME)).thenReturn("Test User");
+
+        String result = userController.dashboard(session, model);
+
+        assertEquals("dashboard", result);
+        verify(model).addAttribute(USER_FULL_NAME, "Test User");
+    }
+
+    @Test
+    void testLoginUser_SessionAttributeVerification() throws UserServiceImpl.PasswordHashingException {
+        User user = new User();
+        user.setId(1L);
+        user.setEmail("test@example.com");
+        user.setFullName("Test User");
+        user.setUserType("VEHICLE_OWNER");
+        user.setActive(true);
+
+        when(userService.authenticateUser(anyString(), anyString())).thenReturn(user);
+
+        String result = userController.loginUser("test@example.com", "password", session, redirectAttributes);
+
+        assertEquals(REDIRECT_DASHBOARD, result);
+        verify(session).setAttribute(USER_ID, 1L);
+        verify(session).setAttribute(USER_EMAIL, "test@example.com");
+        verify(session).setAttribute(USER_FULL_NAME, "Test User");
+        verify(session).setAttribute("loggedInUser", user);
+        verify(session).setAttribute(USER_TYPE, "VEHICLE_OWNER");
+        verify(session).setAttribute("userIsThere", true);
+    }
+
+    @Test
+    void testResendOTP_ExceptionInOTPService() {
+        UserRegistrationDTO userDTO = new UserRegistrationDTO();
+        userDTO.setEmail("test@example.com");
+
+        when(session.getAttribute(PENDING_REGISTRATION)).thenReturn(userDTO);
+        when(session.getAttribute(LAST_OTP_RESEND_TIME)).thenReturn(null);
+        doThrow(new RuntimeException("OTP Service Error"))
+                .when(registrationOTPService).sendRegistrationOTP(anyString());
+
+        String result = userController.resendOTP(session, model, redirectAttributes);
+
+        assertEquals(REGISTRATION_VERIFY, result);
+        verify(model).addAttribute(ERROR_MESSAGE, "Failed to send new code. Please try again.");
+        verify(model).addAttribute(EMAIL, "test@example.com");
+    }
+
+    @Test
+    void testVerifyReactivation_SuccessWithCleanup() {
+        String email = "test@example.com";
+        String otp = "123456";
+
+        when(otpService.verifyReactivationOTP(email, otp)).thenReturn(true);
+
+        String result = userController.verifyReactivation(email, otp, session, redirectAttributes);
+
+        assertEquals(REDIRECT_LOGIN, result);
+        verify(session).removeAttribute(OTP_ATTEMPTS);
+        verify(userService).reactivateAccount(email);
+        verify(otpService).sendAccountStatusEmail(email, false);
+        verify(redirectAttributes).addFlashAttribute(SUCCESS_MESSAGE, "Account reactivated successfully. Please login.");
+    }
+
+    @Test
+    void testViewProfile_UserNotFoundInService() {
+        Long userId = 1L;
+        when(session.getAttribute(USER_ID)).thenReturn(userId);
+        when(userService.getUserById(userId)).thenReturn(null);
+
+        String result = userController.viewProfile(session, model);
+
+        assertEquals(REDIRECT_LOGIN, result);
+        verify(userService).getUserById(userId);
+        verifyNoInteractions(model);
+    }
+
+    @Test
+    void testUpdateProfile_NullBindingResult() {
+        Long userId = 1L;
+        UserProfileDTO profileDTO = new UserProfileDTO();
+        when(session.getAttribute(USER_ID)).thenReturn(userId);
+
+        String result = userController.updateProfile(profileDTO, null, session, redirectAttributes);
+
+        assertEquals("redirect:/profile/edit", result);
+        verify(redirectAttributes).addFlashAttribute(eq(ERROR_MESSAGE), contains("Error updating profile"));
+    }
 
 
 }

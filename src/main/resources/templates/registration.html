@@ -79,7 +79,7 @@
                 <label for="userType">User Type</label>
                 <select class="form-control" id="userType" th:field="*{userType}" required>
                     <option value="">Select User Type</option>
-                    <option value="VEHICLE_OWNER">Vehicle Owner</option>
+                    <option value="VEHICLE_OWNER">Vehicle Owner / Driver</option>
                     <option value="SPOT_OWNER">Parking Spot Owner</option>
                 </select>
                 <span class="text-danger" th:if="${#fields.hasErrors('userType')}" th:errors="*{userType}"></span>

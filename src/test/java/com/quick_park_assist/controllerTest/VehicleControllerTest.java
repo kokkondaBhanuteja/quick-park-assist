@@ -502,4 +502,106 @@ class VehicleControllerTest {
 		assertEquals("SearchVehicle", result);
 		verify(model).addAttribute("errorMessage", "No vehicle found with this number");
 	}
+	@Test
+	void testAddVehicle_MaxVehiclesReached() {
+		VehicleDTO vehicleDTO = new VehicleDTO();
+		Long userId = 1L;
+		when(session.getAttribute("userId")).thenReturn(userId);
+		when(bindingResult.hasErrors()).thenReturn(false);
+		when(vehicleRepository.existsVehicleByVehicleNumber(anyString())).thenReturn(false);
+		doThrow(new RuntimeException("Maximum vehicles limit reached")).when(vehicleService).addVehicle(anyLong(), any(VehicleDTO.class));
+
+		String result = vehicleController.addVehicle(vehicleDTO, bindingResult, session, redirectAttributes);
+		assertEquals("AddVehicle", result);
+		verify(redirectAttributes).addFlashAttribute("errorMessage", "Error adding vehicle: Maximum vehicles limit reached");
+	}
+
+	@Test
+	void testUpdateVehicle_InvalidVehicleData() {
+		Long vehicleId = 1L;
+		VehicleDTO vehicleDTO = new VehicleDTO();
+		vehicleDTO.setVehicleNumber(""); // Invalid vehicle number
+
+		when(session.getAttribute("userId")).thenReturn(2L);
+		when(bindingResult.hasErrors()).thenReturn(true);
+
+		String viewName = vehicleController.updateVehicle(vehicleId, vehicleDTO, bindingResult, session, model, redirectAttributes);
+		assertEquals("vehicles/edit", viewName);
+	}
+
+	@Test
+	void testUpdateVehicle_ServiceLayerError() {
+		Long vehicleId = 1L;
+		VehicleDTO vehicleDTO = new VehicleDTO();
+		when(session.getAttribute("userId")).thenReturn(2L);
+		when(bindingResult.hasErrors()).thenReturn(false);
+		doThrow(new RuntimeException("Update failed")).when(vehicleService).updateVehicle(anyLong(), anyLong(), any(VehicleDTO.class));
+
+		String viewName = vehicleController.updateVehicle(vehicleId, vehicleDTO, bindingResult, session, model, redirectAttributes);
+		assertEquals("redirect:/editVehicle", viewName);
+		verify(redirectAttributes).addFlashAttribute("errorMessage", "Error updating vehicle: Update failed");
+	}
+
+	@Test
+	void testDeleteVehicle_VehicleNotFound() {
+		Long vehicleId = 1L;
+		Long userId = 2L;
+		when(session.getAttribute("userId")).thenReturn(userId);
+		doThrow(new RuntimeException("Vehicle not found")).when(vehicleService).deleteVehicle(vehicleId, userId);
+
+		String viewName = vehicleController.deleteVehicle(vehicleId, session, redirectAttributes);
+		assertEquals("redirect:/dashboard", viewName);
+		verify(redirectAttributes).addFlashAttribute("errorMessage", "Error deleting vehicle: Vehicle not found");
+	}
+
+	@Test
+	void testSearchVehicle_SpotOwnerAttemptSearch() {
+		when(session.getAttribute(USER_ID)).thenReturn(1L);
+		VehicleController spyController = Mockito.spy(vehicleController);
+		doReturn(true).when(spyController).isSpotOwner(session);
+
+		String result = spyController.searchVehicle("ABC123", session, model);
+		assertEquals("redirect:/dashboard", result);
+	}
+
+	@Test
+	void testShowEditForm_VehicleNotOwnedByUser() {
+		Long vehicleId = 1L;
+		Long userId = 2L;
+		when(session.getAttribute("userId")).thenReturn(userId);
+		doThrow(new RuntimeException("Vehicle not found")).when(vehicleService).getVehicleByIdAndUserId(vehicleId, userId);
+
+		String viewName = vehicleController.showEditForm(vehicleId, session, model, redirectAttributes);
+		assertEquals("redirect:/", viewName);
+	}
+
+
+
+	@Test
+	void testSearchVehicle_CaseInsensitiveSearch() {
+		Vehicle vehicle = new Vehicle();
+		vehicle.setVehicleNumber("ABC123");
+		when(session.getAttribute(USER_ID)).thenReturn(1L);
+		when(vehicleRepository.findByVehicleNumber("abc123")).thenReturn(Optional.of(vehicle));
+
+		VehicleController spyController = Mockito.spy(vehicleController);
+		doReturn(false).when(spyController).isSpotOwner(session);
+
+		String result = spyController.searchVehicle("abc123", session, model);
+		assertEquals("SearchVehicle", result);
+		verify(model).addAttribute("vehicle", vehicle);
+	}
+
+	@Test
+	void testUpdateVehicle_NonExistentVehicleId() {
+		Long vehicleId = 999L; // Non-existent ID
+		VehicleDTO vehicleDTO = new VehicleDTO();
+		when(bindingResult.hasErrors()).thenReturn(false);
+		when(session.getAttribute("userId")).thenReturn(2L);
+		doThrow(new RuntimeException("Vehicle not found")).when(vehicleService).updateVehicle(vehicleId, 2L, vehicleDTO);
+
+		String viewName = vehicleController.updateVehicle(vehicleId, vehicleDTO, bindingResult, session, model, redirectAttributes);
+		assertEquals("redirect:/editVehicle", viewName);
+		verify(redirectAttributes).addFlashAttribute("errorMessage", "Error updating vehicle: Vehicle not found");
+	}
 }
