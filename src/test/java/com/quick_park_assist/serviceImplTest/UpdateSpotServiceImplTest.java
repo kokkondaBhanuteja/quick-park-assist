@@ -12,10 +12,11 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 class UpdateSpotServiceImplTest {
@@ -183,6 +184,68 @@ class UpdateSpotServiceImplTest {
         List<ParkingSpot> result = parkingSpotService.getParkingSpotsForLoggedInUser(2L);
 
         assertEquals(0, result.size());
+    }
+    @Test
+    void testGetParkingSpotsForLoggedInUser_WhenUserHasParkingSpots() {
+        Long userId = 1L;
+        ParkingSpot parkingSpot = new ParkingSpot();
+        ParkingSpot parkingSpot2 = new ParkingSpot();
+        User user = new User();
+        user.setId(2L);
+        parkingSpot.setUser(user);
+        parkingSpot.setSpotLocation("new Delhi");
+        parkingSpot.setAdditionalInstructions("Near Entrance");
+        parkingSpot.setAvailability("Available");
+        parkingSpot.setPricePerHour(10.0);
+        user.setId(1L);
+        parkingSpot2.setUser(user);
+        parkingSpot2.setSpotLocation("new Delhi");
+        parkingSpot2.setAdditionalInstructions("Near Entrance");
+        parkingSpot2.setAvailability("Available");
+        parkingSpot2.setPricePerHour(10.0);
+
+        List<ParkingSpot> mockSpots = Arrays.asList(
+                parkingSpot,parkingSpot2
+        );
+
+        when(parkingSpotRepository.findByUserId(userId)).thenReturn(mockSpots);
+
+        List<ParkingSpot> result = updateSpotServiceImpl.getParkingSpotsForLoggedInUser(userId);
+
+        assertEquals(2, result.size());
+        assertEquals("new Delhi", result.get(0).getSpotLocation());
+        verify(parkingSpotRepository, times(1)).findByUserId(userId);
+    }
+
+    @Test
+    void testGetParkingSpotsForLoggedInUser_WhenUserHasNoParkingSpots() {
+        Long userId = 2L;
+        when(parkingSpotRepository.findByUserId(userId)).thenReturn(Collections.emptyList());
+
+        List<ParkingSpot> result = updateSpotServiceImpl.getParkingSpotsForLoggedInUser(userId);
+
+        assertTrue(result.isEmpty());
+        verify(parkingSpotRepository, times(1)).findByUserId(userId);
+    }
+
+    @Test
+    void testGetParkingSpotsForLoggedInUser_WhenUserIdIsNull() {
+        List<ParkingSpot> result = updateSpotServiceImpl.getParkingSpotsForLoggedInUser(null);
+
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    void testGetParkingSpotsForLoggedInUser_WhenRepositoryThrowsException() {
+        Long userId = 3L;
+        when(parkingSpotRepository.findByUserId(userId)).thenThrow(new RuntimeException("Database Error"));
+
+        Exception exception = assertThrows(RuntimeException.class, () -> {
+            updateSpotServiceImpl.getParkingSpotsForLoggedInUser(userId);
+        });
+
+        assertEquals("Database Error", exception.getMessage());
+        verify(parkingSpotRepository, times(1)).findByUserId(userId);
     }
 
 }
