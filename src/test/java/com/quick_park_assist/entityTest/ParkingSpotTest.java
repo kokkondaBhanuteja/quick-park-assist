@@ -73,17 +73,30 @@ import org.junit.jupiter.api.Test;
         assertEquals(instructions, parkingSpot.getAdditionalInstructions());
     }
 
-    @Test
-    public void testToString() {
-        parkingSpot.setId(1L);
-        parkingSpot.setLocation("Main Street");
-        parkingSpot.setSpotLocation("Lot 42");
-        parkingSpot.setAvailability("Available");
-        parkingSpot.setPricePerHour(10.5);
-        parkingSpot.setSpotType("Compact");
-        parkingSpot.setUser(user);
-        parkingSpot.setAdditionalInstructions("Park near the entrance.");
-}
+     @Test
+     void testToString() {
+         ParkingSpot parkingSpot = new ParkingSpot();
+         parkingSpot.setId(1L);
+         parkingSpot.setUser(user);
+         parkingSpot.setLocation("Downtown");
+         parkingSpot.setSpotLocation("A1");
+         parkingSpot.setAvailability("Available");
+         parkingSpot.setPricePerHour(10.0);
+         parkingSpot.setSpotType("Compact");
+         parkingSpot.setAdditionalInstructions("Near entrance");
+
+         String expectedString = "ParkingSpot{" +
+                 "id=1'user_id'User{id=1, fullName='Test User', email='null', phoneNumber='null', userType='null', address='null', createdAt=null, active=false}'" +
+                 ", location='Downtown'" +
+                 ", spotLocation='A1'" +
+                 ", availability='Available'" +
+                 ", pricePerHour=10.0" +
+                 ", spotType='Compact'" +
+                 ", additionalInstructions='Near entrance'" +
+                 '}';
+
+         assertEquals(expectedString, parkingSpot.toString());
+     }
 
 @Test
 public void testDefaultValues() {

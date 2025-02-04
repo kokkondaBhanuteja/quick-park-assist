@@ -84,6 +84,14 @@ class BookingSpotTest {
 
         assertEquals(-100.0, bookingSpot.getEstimatedPrice());
     }
+    @Test
+    void testParkingSpot(){
+        ParkingSpot parkingSpot = new ParkingSpot();
+        parkingSpot.setId(1L);
+        BookingSpot bookingSpot = new BookingSpot();
+        bookingSpot.setSpot(parkingSpot);
+        assertEquals(parkingSpot, bookingSpot.getSpot());
+    }
 
     @Test
     void testSpotLocation() {

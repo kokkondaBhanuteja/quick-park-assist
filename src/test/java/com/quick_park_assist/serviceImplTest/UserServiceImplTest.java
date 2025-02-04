@@ -20,7 +20,11 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.time.LocalDateTime;
+import java.util.Base64;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -791,5 +795,24 @@ class UserServiceImplTest {
         userService.deleteAccount(1L, "Customer");
         verify(userRepository).deleteById(1L);
     }
+    @Test
+    void testHashPassword_Success() throws Exception {
+        String password = "securePassword";
+        MessageDigest digest = MessageDigest.getInstance("SHA-256");
+        byte[] hash = digest.digest(password.getBytes(StandardCharsets.UTF_8));
+        String expectedHash = Base64.getEncoder().encodeToString(hash);
+
+        String result = userService.hashPassword(password);
+
+        assertEquals(expectedHash, result);
+    }
+
+    @Test
+    void testHashPassword_Exception() {
+        assertThrows(UserServiceImpl.PasswordHashingException.class, () -> {
+            throw new UserServiceImpl.PasswordHashingException("Error hashing password", new NoSuchAlgorithmException());
+        });
+    }
+
 }
 

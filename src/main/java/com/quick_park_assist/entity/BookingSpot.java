@@ -2,13 +2,13 @@ package com.quick_park_assist.entity;
 
 import java.util.Date;
 import jakarta.persistence.*;
-import lombok.Getter;
+import lombok.Data;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import com.quick_park_assist.enums.BookingSpotStatus;
 import com.quick_park_assist.enums.PaymentMethod;
 
-import lombok.Data;
+
 
 @Entity
 @Data

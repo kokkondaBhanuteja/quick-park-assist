@@ -6,6 +6,7 @@ import com.quick_park_assist.entity.User;
 import com.quick_park_assist.repository.OTPRepository;
 import com.quick_park_assist.repository.UserRepository;
 import com.quick_park_assist.serviceImpl.OTPServiceImpl;
+import com.quick_park_assist.serviceImpl.UserServiceImpl;
 import com.quick_park_assist.util.OTPGenerator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -16,7 +17,10 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
 import java.time.LocalDateTime;
+import java.util.Base64;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -109,6 +113,31 @@ class OTPServiceImplTest {
         String otpCode = "123456";
 
         when(userRepository.findByEmail(email)).thenReturn(Optional.empty());
+
+        // Act
+        boolean result = otpService.verifyOTP(email, otpCode);
+
+        // Assert
+        assertFalse(result);
+        verify(otpRepository, never()).findByUserIdAndOtpCode(anyLong(), anyString());
+    }
+    @Test
+    void testVerifyOTP_EmptyOTP() {
+        // Arrange
+        String email = "test@example.com";
+        String otpCode = "123456";
+        User user = new User();
+        user.setId(1L);
+        user.setEmail(email);
+        OTP otp = new OTP();
+        otp.setUserId(1L);
+        otp.setOtpCode(otpCode);
+        otp.setExpirationTime(LocalDateTime.now().plusMinutes(5));
+
+
+
+        when(userRepository.findByEmail(email)).thenReturn(Optional.empty());
+        when(otpRepository.findByUserIdAndOtpCode(user.getId(), otpCode)).thenReturn(Optional.empty());
 
         // Act
         boolean result = otpService.verifyOTP(email, otpCode);
@@ -370,5 +399,6 @@ class OTPServiceImplTest {
         assertFalse(result);
         verify(otpRepository, times(0)).findByUserIdAndOtpCode(anyLong(), anyString());
     }
+
 }
 

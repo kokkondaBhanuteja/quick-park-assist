@@ -147,4 +147,14 @@ class ReservationServiceImplTest {
         verify(reservationRepository, times(1)).findById(reservationId);
         verify(reservationRepository, never()).delete(any(Reservation.class));
     }
+    @Test
+    void testIsTimeSlotAvailable() {
+        Date reservationTime = new Date();
+        String vehicleNumber = "ABC123";
+        when(reservationRepository.isTimeSlotAvailable(reservationTime, vehicleNumber)).thenReturn(true);
+
+        boolean result = reservationService.isTimeSlotAvailable(reservationTime, vehicleNumber);
+
+        assertTrue(result);
+    }
 }

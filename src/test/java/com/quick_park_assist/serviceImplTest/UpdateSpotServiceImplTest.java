@@ -1,7 +1,9 @@
 package com.quick_park_assist.serviceImplTest;
 
 import com.quick_park_assist.entity.ParkingSpot;
+import com.quick_park_assist.entity.User;
 import com.quick_park_assist.repository.ParkingSpotRepository;
+import com.quick_park_assist.service.IUpdateParkingSpotService;
 import com.quick_park_assist.serviceImpl.UpdateSpotServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -9,6 +11,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -21,6 +25,9 @@ class UpdateSpotServiceImplTest {
 
     @InjectMocks
     private UpdateSpotServiceImpl updateSpotServiceImpl;
+
+    @Mock
+    private IUpdateParkingSpotService parkingSpotService;
 
     @BeforeEach
     void setUp() {
@@ -159,4 +166,23 @@ class UpdateSpotServiceImplTest {
         verify(parkingSpotRepository).save(parkingSpot);
         assertEquals(additionalInformation, parkingSpot.getAdditionalInstructions());
     }
+    @Test
+    void testGetParkingSpotsForLoggedInUser() {
+        ParkingSpot parkingSpot = new ParkingSpot();
+        User user = new User();
+        user.setId(2L);
+        parkingSpot.setUser(user);
+        parkingSpot.setSpotLocation("new Deli");
+        parkingSpot.setAdditionalInstructions("Near Entrance");
+        parkingSpot.setAvailability("Available");
+        parkingSpot.setPricePerHour(10.0);
+        List<ParkingSpot> mockSpots = Arrays.asList(parkingSpot);
+        when(parkingSpotRepository.findByUserId(1L)).thenReturn(mockSpots);
+
+
+        List<ParkingSpot> result = parkingSpotService.getParkingSpotsForLoggedInUser(2L);
+
+        assertEquals(0, result.size());
+    }
+
 }
