@@ -1055,6 +1055,54 @@ class UserControllerTest {
                 "Password must be at least 6 characters and contain at least one letter, one number, and one special character");
     }
 
+    @Test
+    void testRegisterUser_PasswordMissingNumber() {
+        // Arrange
+        UserRegistrationDTO userDTO = createUserDTO();
+        userDTO.setPassword("Password@");  // Missing a number
+        when(bindingResult.hasErrors()).thenReturn(false);
+
+        // Act
+        String result = userController.registerUser(userDTO, bindingResult, session, model);
+
+        // Assert
+        assertEquals("registration-verify", result, "Should return to registration page due to weak password.");
+        verify(bindingResult).rejectValue("password", "weak Password",
+                "Password must be at least 6 characters and contain at least one letter, one number, and one special character");
+    }
+
+    @Test
+    void testRegisterUser_PasswordMissingSpecialCharacter() {
+        // Arrange
+        UserRegistrationDTO userDTO = createUserDTO();
+        userDTO.setPassword("Password1");  // Missing a special character
+        when(bindingResult.hasErrors()).thenReturn(false);
+
+        // Act
+        String result = userController.registerUser(userDTO, bindingResult, session, model);
+
+        // Assert
+        assertEquals("registration-verify", result, "Should return to registration page due to weak password.");
+        verify(bindingResult).rejectValue("password", "weak Password",
+                "Password must be at least 6 characters and contain at least one letter, one number, and one special character");
+    }
+
+    @Test
+    void testRegisterUser_PasswordTooShort() {
+        // Arrange
+        UserRegistrationDTO userDTO = createUserDTO();
+        userDTO.setPassword("P@1");  // Too short (less than 6 characters)
+        when(bindingResult.hasErrors()).thenReturn(false);
+
+        // Act
+        String result = userController.registerUser(userDTO, bindingResult, session, model);
+
+        // Assert
+        assertEquals("registration-verify", result, "Should return to registration page due to weak password.");
+        verify(bindingResult).rejectValue("password", "weak Password",
+                "Password must be at least 6 characters and contain at least one letter, one number, and one special character");
+    }
+
     private UserRegistrationDTO createUserDTO() {
         UserRegistrationDTO userDTO = new UserRegistrationDTO();
         userDTO.setEmail("test@example.com");

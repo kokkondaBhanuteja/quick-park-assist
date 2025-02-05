@@ -95,14 +95,7 @@ public class UserController {
 
                 // Log validation state after password validation
             log.info("Validation errors after password check: {}", result.hasErrors());
-
-            if (result.hasErrors()) {
-                result.getAllErrors().forEach(error ->
-                        log.info("Validation error: {}", error.getDefaultMessage())
-                );
-                return REGISTRATION;
-            }
-
+            
             // Check for existing email and phone
             if (userService.isEmailTaken(userDTO.getEmail())) {
                 result.rejectValue(EMAIL, "email.exists", "Email already registered");
