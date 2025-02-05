@@ -55,9 +55,6 @@ class BookingSpotControllerTest {
     @Mock
     private RedirectAttributes redirectAttributes;
 
-    @Mock
-    private Logger mockLogger;
-
 
     @BeforeEach
     void setUp() {
@@ -514,7 +511,7 @@ class BookingSpotControllerTest {
 
     // Helper method to mock an HTTP session with a userId
     private HttpSession mockSessionWithUserId(Long userId) {
-        HttpSession session = mock(HttpSession.class);
+         session = mock(HttpSession.class);
         when(session.getAttribute("userId")).thenReturn(userId);
         return session;
     }

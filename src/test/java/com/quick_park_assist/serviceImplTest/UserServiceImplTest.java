@@ -813,6 +813,18 @@ class UserServiceImplTest {
             throw new UserServiceImpl.PasswordHashingException("Error hashing password", new NoSuchAlgorithmException());
         });
     }
+    @Test
+     void testHashPasswordThrowsException() {
+        try {
+            MessageDigest mockDigest = mock(MessageDigest.class);
+            when(mockDigest.digest(any(byte[].class))).thenThrow(new RuntimeException("Digest failed"));
+
+            mockDigest.digest("testPassword".getBytes(StandardCharsets.UTF_8));
+            fail("Expected RuntimeException to be thrown");
+        } catch (RuntimeException e) {
+            assertEquals("Digest failed", e.getMessage());
+        }
+    }
 
 }
 

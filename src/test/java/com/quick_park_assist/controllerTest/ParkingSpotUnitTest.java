@@ -663,4 +663,32 @@ public class ParkingSpotUnitTest {
         // Assert
         assertEquals("SearchParkingSpot", result, "Expected only parking spots with the specified availability.");
     }
+    @Test
+    void testSearchLocations_SpecificUnAvailable() {
+        // Arrange
+        String query = "Downtown";
+        String availability = "Unavailable";
+        ParkingSpot parkingSpot = new ParkingSpot();
+        User user = new User();
+        user.setId(1L);
+        parkingSpot.setUser(user);
+        parkingSpot.setSpotLocation("Downtown");
+        parkingSpot.setAdditionalInstructions("Near Entrance");
+        parkingSpot.setAvailability(availability);
+        parkingSpot.setPricePerHour(10.0);
+        List<ParkingSpot> mockParkingSpots = Collections.singletonList(
+                parkingSpot
+        );
+
+        when(session.getAttribute("userId")).thenReturn(1L);
+        when(parkingSpotRepository.findByAvailabilityIgnoreCaseAndSpotLocationContainingIgnoreCaseOrLocationContainingIgnoreCase(
+                anyString(), eq(query), eq(query)))
+                .thenReturn(mockParkingSpots);
+
+        // Act
+        String result = parkingSpotController.showSearchParkingSpotsForm( query,availability,model,session,redirectAttributes);
+
+        // Assert
+        assertEquals("SearchParkingSpot", result, "Expected only parking spots with the specified availability.");
+    }
 }

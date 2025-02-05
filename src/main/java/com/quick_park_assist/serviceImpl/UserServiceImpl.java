@@ -5,7 +5,6 @@ import com.quick_park_assist.dto.UserRegistrationDTO;
 import com.quick_park_assist.entity.User;
 import com.quick_park_assist.repository.*;
 import com.quick_park_assist.service.IUserService;
-import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -133,6 +132,7 @@ public class UserServiceImpl implements IUserService {
      */
     public String hashPassword(String password) throws PasswordHashingException {
         try {
+            // Use "INVALID_ALGO" for testing to force NoSuchAlgorithmException
             MessageDigest digest = MessageDigest.getInstance("SHA-256");
             byte[] hash = digest.digest(password.getBytes(StandardCharsets.UTF_8));
             return Base64.getEncoder().encodeToString(hash);
@@ -140,6 +140,7 @@ public class UserServiceImpl implements IUserService {
             throw new PasswordHashingException("Error hashing password", e);
         }
     }
+
 
     /**
      * Custom exception for password hashing errors.
@@ -165,5 +166,6 @@ public class UserServiceImpl implements IUserService {
                 .map(User::isActive)
                 .orElse(false);
     }
+
 
 }

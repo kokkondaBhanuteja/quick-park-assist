@@ -391,5 +391,58 @@ class StatsControllerTest {
         assertEquals(200, response.getStatusCodeValue(), "Expected HTTP status 200");
         assertTrue(response.getBody().isEmpty(), "Expected an empty list when userType is null.");
     }
+    @Test
+     void testGetRecentActivityForSpotOwner() {
+        HttpSession session = mock(HttpSession.class);
+
+        // Mock session attributes
+        when(session.getAttribute("userId")).thenReturn(123L);
+        when(session.getAttribute("userType")).thenReturn("SPOT_OWNER");
+
+        // Mock statsService method call
+        List<Map<String, Object>> mockActivity = new ArrayList<>();
+        Map<String, Object> activity = new HashMap<>();
+        activity.put("activity", "Sample activity for SPOT_OWNER");
+        mockActivity.add(activity);
+
+        when(statsService.getRecentActivityForOwner(123L, 4)).thenReturn(mockActivity);
+
+        // Call the method
+        ResponseEntity<List<Map<String, Object>>> response = statsController.getRecentActivity(session);
+
+        // Assertions
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertNotNull(response.getBody());
+        assertEquals(1, response.getBody().size());
+        assertEquals("Sample activity for SPOT_OWNER", response.getBody().get(0).get("activity"));
+
+        // Verify that the correct service method was called
+        verify(statsService).getRecentActivityForOwner(123L, 4);
+        verify(statsService, never()).getRecentActivityForUser(anyLong(), anyInt());
+    }
+    @Test
+    void testGetRecentActivityForSpotOwnerIsNull() {
+        HttpSession session = mock(HttpSession.class);
+
+        // Mock session attributes
+        when(session.getAttribute("userId")).thenReturn(123L);
+        when(session.getAttribute("userType")).thenReturn(null);
+
+        // Mock statsService method call
+        List<Map<String, Object>> mockActivity = new ArrayList<>();
+        Map<String, Object> activity = new HashMap<>();
+        activity.put("activity", "Sample activity for SPOT_OWNER");
+        mockActivity.add(activity);
+
+        when(statsService.getRecentActivityForOwner(123L, 4)).thenReturn(mockActivity);
+
+        // Call the method
+        ResponseEntity<List<Map<String, Object>>> response = statsController.getRecentActivity(session);
+
+        // Assertions
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertNotNull(response.getBody());
+        assertEquals(0, response.getBody().size());
+    }
 
 }
