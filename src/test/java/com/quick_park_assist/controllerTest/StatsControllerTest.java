@@ -12,8 +12,7 @@ import jakarta.servlet.http.HttpSession;
 
 import java.util.*;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 class StatsControllerTest {
@@ -331,7 +330,7 @@ class StatsControllerTest {
         assertEquals("Some activity", response.getBody().get(0).get("activity"));
     }
 
-    @Test
+    /*@Test
     void testGetRecentActivity_SpotOwner() {
         Long mockUserId = 456L;
         List<Map<String, Object>> mockData = new ArrayList<>();
@@ -354,6 +353,43 @@ class StatsControllerTest {
         assertNotNull(response.getBody());
         assertEquals(1, response.getBody().size());
         assertEquals("Another activity", response.getBody().get(0).get("activity"));
+    }*/
+
+    @Test
+    void testGetRecentActivity_SpotOwner() {
+        // Arrange
+        Long userId = 1L;
+        when(session.getAttribute("userId")).thenReturn(userId);
+        when(session.getAttribute("userType")).thenReturn("SPOT_OWNER");
+
+        List<Map<String, Object>> mockRecentActivity = Arrays.asList(
+                Map.of("activity", "Booked a spot", "timestamp", "2025-02-01"),
+                Map.of("activity", "Updated spot details", "timestamp", "2025-02-02")
+        );
+
+        when(statsService.getRecentActivityForOwner(userId, 4)).thenReturn(mockRecentActivity);
+
+        // Act
+        ResponseEntity<List<Map<String, Object>>> response = statsController.getRecentActivity(session);
+
+        // Assert
+        assertEquals(200, response.getStatusCodeValue(), "Expected HTTP status 200");
+        assertEquals(mockRecentActivity, response.getBody(), "Expected the recent activity for spot owner.");
+    }
+
+    @Test
+    void testGetRecentActivity_UserTypeNull() {
+        // Arrange
+        Long userId = 1L;
+        when(session.getAttribute("userId")).thenReturn(userId);
+        when(session.getAttribute("userType")).thenReturn(null); // userType is null
+
+        // Act
+        ResponseEntity<List<Map<String, Object>>> response = statsController.getRecentActivity(session);
+
+        // Assert
+        assertEquals(200, response.getStatusCodeValue(), "Expected HTTP status 200");
+        assertTrue(response.getBody().isEmpty(), "Expected an empty list when userType is null.");
     }
 
 }

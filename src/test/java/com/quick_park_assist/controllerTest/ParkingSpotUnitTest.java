@@ -15,9 +15,7 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.ui.Model;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import static org.mockito.Mockito.*;
 import static org.junit.jupiter.api.Assertions.*;
@@ -515,5 +513,138 @@ public class ParkingSpotUnitTest {
 
         assertEquals("RemoveParkingSpot", result);
         verify(model).addAttribute("parkingSpots", mockSpots);
+    }
+
+    @Test
+    void testSearchLocations_QueryProvided() {
+        ParkingSpot parkingSpot = new ParkingSpot();
+        User user = new User();
+        user.setId(1L);
+        parkingSpot.setUser(user);
+        parkingSpot.setId(1L);
+        parkingSpot.setSpotLocation("new Delhi");  // Ensure the spot location matches the query
+        parkingSpot.setAdditionalInstructions("Near Entrance");
+        parkingSpot.setAvailability("Available");
+        parkingSpot.setPricePerHour(10.0);
+
+        ParkingSpot parkingSpot2 = new ParkingSpot();
+        User user2 = new User();
+        user2.setId(2L);
+        parkingSpot2.setUser(user2);
+        parkingSpot2.setId(2L);
+        parkingSpot2.setSpotLocation("new Delhi");
+        parkingSpot2.setAdditionalInstructions("Near Exit");
+        parkingSpot2.setAvailability("Unavailable");
+        parkingSpot2.setPricePerHour(129.0);
+
+        // Arrange
+        String query = "new Delhi";
+        List<ParkingSpot> mockParkingSpots = Arrays.asList(parkingSpot, parkingSpot2);
+
+        // Mock the repository method
+        when(parkingSpotRepository.findByAvailabilityIgnoreCaseAndSpotLocationContainingIgnoreCaseOrLocationContainingIgnoreCase(
+                anyString(), eq(query), eq(query)))
+                .thenReturn(mockParkingSpots);
+
+        // Act
+        List<ParkingSpot> result = parkingSpotController.searchLocations(query);
+
+        // Assert
+        assertNotNull(result, "Result should not be null.");
+        assertEquals(2, result.size(), "Expected 2 matching parking spots.");
+        assertEquals(mockParkingSpots, result, "Expected list of matching parking spots.");
+    }
+
+    @Test
+    void testSearchLocations_QueryIsNullOrEmpty() {
+        // Act
+        List<ParkingSpot> resultWithNull = parkingSpotController.searchLocations(null);
+        List<ParkingSpot> resultWithEmpty = parkingSpotController.searchLocations("");
+
+        // Assert
+        assertTrue(resultWithNull.isEmpty(), "Expected an empty list when query is null.");
+        assertTrue(resultWithEmpty.isEmpty(), "Expected an empty list when query is empty.");
+    }
+
+    @Test
+    void testSearchLocations_NoLocationProvided() {
+        // Arrange
+        String query = " ";
+        when(parkingSpotRepository.findByAvailabilityIgnoreCaseAndSpotLocationContainingIgnoreCaseOrLocationContainingIgnoreCase(
+                anyString(), eq(query), eq(query)))
+                .thenReturn(new ArrayList<>());
+
+        // Act
+        when(session.getAttribute("userId")).thenReturn(1L);
+        String result = parkingSpotController.showSearchParkingSpotsForm(" ","available",model,session,redirectAttributes);
+
+        // Assert
+        verify(redirectAttributes).addFlashAttribute("errorMessage", "Please enter a location to search.");
+        assertEquals("SearchParkingSpot", result, "Expected to return the search page when location is not provided.");
+    }
+
+    @Test
+    void testSearchLocations_AvailabilityAll() {
+        ParkingSpot parkingSpot = new ParkingSpot();
+        User user = new User();
+        user.setId(1L);
+        parkingSpot.setUser(user);
+        parkingSpot.setId(1L);
+        parkingSpot.setSpotLocation("new Deli");
+        parkingSpot.setAdditionalInstructions("Near Entrance");
+        parkingSpot.setAvailability("Available");
+        parkingSpot.setPricePerHour(10.0);
+        ParkingSpot parkingSpot2 = new ParkingSpot();
+        user.setId(2L);
+        parkingSpot2.setId(2L);
+        parkingSpot.setUser(user);
+        parkingSpot.setSpotLocation("new Deli");
+        parkingSpot.setAdditionalInstructions("Near Entrance");
+        parkingSpot.setAvailability("Unavailable");
+        parkingSpot.setPricePerHour(129.0);
+        // Arrange
+        String location = "new Delhi";
+        String availability = "all";
+        List<ParkingSpot> mockParkingSpots = Arrays.asList(
+                parkingSpot,parkingSpot2
+        );
+
+        when(parkingSpotRepository.findByAvailabilityIgnoreCaseAndSpotLocationContainingIgnoreCaseOrLocationContainingIgnoreCase(
+                anyString(), eq(location), eq(location)))
+                .thenReturn(mockParkingSpots);
+        // Act
+        List<ParkingSpot> result = parkingSpotController.searchLocations(location);
+
+        // Assert
+        assertEquals(mockParkingSpots, result, "Expected all parking spots matching the location.");
+    }
+
+    @Test
+    void testSearchLocations_SpecificAvailability() {
+        // Arrange
+        String query = "Downtown";
+        String availability = "Available";
+        ParkingSpot parkingSpot = new ParkingSpot();
+        User user = new User();
+        user.setId(1L);
+        parkingSpot.setUser(user);
+        parkingSpot.setSpotLocation("Downtown");
+        parkingSpot.setAdditionalInstructions("Near Entrance");
+        parkingSpot.setAvailability("Available");
+        parkingSpot.setPricePerHour(10.0);
+        List<ParkingSpot> mockParkingSpots = Collections.singletonList(
+                parkingSpot
+        );
+
+        when(session.getAttribute("userId")).thenReturn(1L);
+        when(parkingSpotRepository.findByAvailabilityIgnoreCaseAndSpotLocationContainingIgnoreCaseOrLocationContainingIgnoreCase(
+                anyString(), eq(query), eq(query)))
+                .thenReturn(mockParkingSpots);
+
+        // Act
+        String result = parkingSpotController.showSearchParkingSpotsForm( query,"available",model,session,redirectAttributes);
+
+        // Assert
+        assertEquals("SearchParkingSpot", result, "Expected only parking spots with the specified availability.");
     }
 }
