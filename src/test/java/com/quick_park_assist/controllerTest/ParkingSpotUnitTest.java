@@ -259,7 +259,7 @@ public class ParkingSpotUnitTest {
         String availability = "all";
         when(session.getAttribute("userId")).thenReturn(1L);
         List<ParkingSpot> parkingSpots = List.of(new ParkingSpot(), new ParkingSpot());
-        when(parkingSpotRepository.findByLocationContainingIgnoreCaseAndSpotTypeNot(location, "EV_SPOT"))
+        when(parkingSpotRepository.findByLocationContainingIgnoreCase(location))
                 .thenReturn(parkingSpots);
 
         // Act
