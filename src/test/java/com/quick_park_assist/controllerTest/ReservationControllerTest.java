@@ -550,5 +550,31 @@ class ReservationControllerTest {
         verify(reservationService).addReservation(any(Reservation.class));
     }
 
+    @Test
+    void testAddReservation_UserNotFoundExceptionHandled() {
+        // Arrange
+        Long userId = 1L;
+        when(session.getAttribute(ReservationController.USER_ID)).thenReturn(USER_ID);
+        when(parkingSpotRepository.findById(anyLong())).thenReturn(Optional.of(new ParkingSpot()));
+        when(vehicleRepository.existsVehicleByVehicleNumberAndUserIdAndEvTrue("EV123", USER_ID)).thenReturn(true);
+        when(reservationService.isTimeSlotAvailable(any(Date.class), anyString())).thenReturn(true);
+
+        Reservation reservation = new Reservation();
+        reservation.setReservationTime(new Date(System.currentTimeMillis()+3600*1000));// Replace with your actual Reservation class
+        reservation.setStatus("PENDING");
+
+        // Simulate userRepository throwing a RuntimeException
+        when(userRepository.findById(userId)).thenThrow(new RuntimeException("User not found"));
+
+        // Act
+        String result = reservationController.addReservation("EV123","1",session, reservation, redirectAttributes);
+
+        // Assert
+        assertEquals("redirect:/ev-charging/add", result);
+        verify(reservationService).addReservation(reservation);
+        verify(redirectAttributes).addFlashAttribute("successMessage", "Reservation is Successful!");
+        assertNull(reservation.getUser(), "User should be null after exception.");
+    }
+
 
 }

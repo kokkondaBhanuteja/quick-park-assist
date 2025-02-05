@@ -423,4 +423,49 @@ class BookingSpotControllerTest {
         }, "Should throw an exception when the repository encounters an error.");
     }
 
+    @Test
+    void testSubmitBookingSpotForm_DurationInvalid() {
+        // Arrange
+        BookingSpot bookingSpot = new BookingSpot();
+        bookingSpot.setStartTime(new Date(System.currentTimeMillis() + 90000)); // Valid future start time
+        bookingSpot.setDuration(0.0); // Invalid duration
+
+        // Act
+        String result = bookingSpotController.submitBookingSpotForm(
+                1L, "Location A", redirectAttributes, bookingSpot, mockSessionWithUserId(1L));
+
+        // Assert
+        assertEquals("redirect:/bookingSpot/", result);
+        verify(redirectAttributes).addFlashAttribute("errorMessage", "Please provide a valid duration.");
+    }
+
+    @Test
+    void testSubmitBookingSpotForm_ExceptionHandling() {
+        // Arrange
+        BookingSpot bookingSpot = new BookingSpot();
+        bookingSpot.setDuration(2.0);
+        bookingSpot.setStartTime(new Date(System.currentTimeMillis() + 3600 * 1000)); // Future time
+        User user = new User();
+        user.setId(1L);
+        when(userRepository.findById(user.getId())).thenReturn(Optional.of(user));
+        when(bookingSpotService.checkIfPreviouslyBooked(1L,1L,bookingSpot.getStartTime())).thenThrow(new RuntimeException("Database error"));
+
+
+        // Act
+        String result = bookingSpotController.submitBookingSpotForm(
+                1L, "Location A", redirectAttributes, bookingSpot, mockSessionWithUserId(1L));
+
+        // Assert
+        assertEquals("redirect:/bookingSpot/", result);
+        verify(redirectAttributes).addFlashAttribute("errorMessage", "An error occurred during booking.");
+    }
+
+    // Helper method to mock an HTTP session with a userId
+    private HttpSession mockSessionWithUserId(Long userId) {
+        HttpSession session = mock(HttpSession.class);
+        when(session.getAttribute("userId")).thenReturn(userId);
+        return session;
+    }
+
+
 }

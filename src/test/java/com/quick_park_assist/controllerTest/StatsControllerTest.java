@@ -115,6 +115,7 @@ class StatsControllerTest {
     @Test
     void testGetRecentActivity_Success() {
         when(session.getAttribute("userId")).thenReturn(3L);
+
         List<Map<String, Object>> mockRecentActivity = new ArrayList<>();
         Map<String, Object> activity = new HashMap<>();
         activity.put("activity", "data");
@@ -129,7 +130,8 @@ class StatsControllerTest {
     }
     @Test
     void testGetRecentActivity_SuccessOwner() {
-        when(session.getAttribute("userId")).thenReturn(3L);
+        when(session.getAttribute("userId")).thenReturn(2L);
+        when(session.getAttribute("userType")).thenReturn("SPOT_OWNER");
         List<Map<String, Object>> mockRecentActivity = new ArrayList<>();
         Map<String, Object> activity = new HashMap<>();
         activity.put("activity", "data");

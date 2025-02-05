@@ -25,7 +25,7 @@ import java.util.Collections;
 import java.util.Optional;
 
 import static com.quick_park_assist.controller.VehicleController.USER_ID;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 class VehicleControllerTest {
@@ -603,5 +603,80 @@ class VehicleControllerTest {
 		String viewName = vehicleController.updateVehicle(vehicleId, vehicleDTO, bindingResult, session, model, redirectAttributes);
 		assertEquals("redirect:/editVehicle", viewName);
 		verify(redirectAttributes).addFlashAttribute("errorMessage", "Error updating vehicle: Vehicle not found");
+	}
+	@Test
+	void testIsSpotOwner_WhenUserIsSpotOwner() {
+		// Arrange
+		HttpSession session = mock(HttpSession.class);
+		when(session.getAttribute("userType")).thenReturn("SPOT_OWNER");
+
+		// Act
+		boolean result = vehicleController.isSpotOwner(session);
+
+		// Assert
+		assertFalse(result, "Expected false when userType is SPOT_OWNER");
+	}
+
+	@Test
+	void testIsSpotOwner_WhenUserIsNotSpotOwner() {
+		// Arrange
+		HttpSession session = mock(HttpSession.class);
+		when(session.getAttribute("userType")).thenReturn("CUSTOMER");
+
+		// Act
+		boolean result = vehicleController.isSpotOwner(session);
+
+		// Assert
+		assertTrue(result, "Expected true when userType is not SPOT_OWNER");
+	}
+
+	@Test
+	void testIsSpotOwner_WhenUserTypeIsNull() {
+		// Arrange
+		HttpSession session = mock(HttpSession.class);
+		when(session.getAttribute("userType")).thenReturn(null);
+
+		// Act
+		boolean result = vehicleController.isSpotOwner(session);
+
+		// Assert
+		assertTrue(result, "Expected true when userType is null");
+	}
+	@Test
+	void testShowSearchForm_UserNotLoggedIn() {
+		// Arrange
+		when(session.getAttribute("userId")).thenReturn(null);
+
+		// Act
+		String result = vehicleController.showSearchForm(session, model);
+
+		// Assert
+		assertEquals("redirect:/login", result, "Expected redirect to login if user is not logged in.");
+	}
+
+	@Test
+	void testShowSearchForm_UserIsSpotOwner() {
+		// Arrange
+		when(session.getAttribute("userId")).thenReturn(1L);
+		when(session.getAttribute("userType")).thenReturn("SPOT_OWNER");
+
+		// Act
+		String result = vehicleController.showSearchForm(session, model);
+
+		// Assert
+		assertEquals("SearchVehicle", result, "Expected redirect to dashboard for spot owners.");
+	}
+
+	@Test
+	void testShowSearchForm_UserIsNotSpotOwner() {
+		// Arrange
+		when(session.getAttribute("userId")).thenReturn(1L);
+		when(session.getAttribute("userType")).thenReturn("CUSTOMER");
+
+		// Act
+		String result = vehicleController.showSearchForm(session, model);
+
+		// Assert
+		assertEquals("redirect:/dashboard", result, "Expected to return the search form view for regular users.");
 	}
 }
