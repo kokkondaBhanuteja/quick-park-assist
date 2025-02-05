@@ -134,7 +134,7 @@ public class AddonController {
     }
     @PostMapping("/save")
     public String saveAddon(@ModelAttribute(ADDON) AddonService addonService,
-                            @RequestParam("serviceId") Long serviceId,
+                            @RequestParam(value = "serviceId",required = false) Long serviceId,
                             HttpSession session,
                             RedirectAttributes redirectAttributes
     ) {
@@ -142,6 +142,10 @@ public class AddonController {
 
         if (userId == null) {
             return REDIRECT_LOGIN; // Redirect to login if the user is not logged in
+        }
+        if(serviceId == null || serviceId <=0){
+            redirectAttributes.addFlashAttribute(ERROR_MESSAGE,"Service  not Found Please Try Again!");
+            return REDIRECT_ADDON_NEW;
         }
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));

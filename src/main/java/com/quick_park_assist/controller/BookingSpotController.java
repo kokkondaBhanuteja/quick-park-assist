@@ -106,7 +106,7 @@ public class BookingSpotController {
     @Transactional
     @PostMapping("/book-spot/")
     public String submitBookingSpotForm(
-            @RequestParam("spotId") Long spotId,
+            @RequestParam(value = "spotId",required = false) Long spotId,
             @RequestParam("spotLocation") String spotLocation,
             RedirectAttributes redirectAttributes,
             @ModelAttribute("bookingSpot") BookingSpot bookingSpot,
@@ -133,7 +133,10 @@ public class BookingSpotController {
             }
             // Now here we will check If we already have a booking in the same spot
             // here we'll check if the spot had previously booked on the sameTime
-
+            if (spotId == null || spotId <= 0) {
+                redirectAttributes.addFlashAttribute(ERROR_MESSAGE, "Parking spot not found.");
+                return REDIRECT_BOOKING_SPOT;
+            }
             if(IbookingSpotService.checkIfPreviouslyBooked(userId,spotId,bookingSpot.getStartTime())) {
                 // Calculate the endTime by adding duration to the startTime
                 Calendar calendar = Calendar.getInstance();
@@ -148,6 +151,7 @@ public class BookingSpotController {
                         .orElseThrow(() -> new RuntimeException("User not found"));
 
                 // Set the user and additional details to the bookingSpot
+
                 bookingSpot.setUser(user);
                 bookingSpot.setMobileNumber(user.getPhoneNumber());
                 Optional<ParkingSpot> parkingSpotOptional = parkingSpotRepository.findById(spotId);
@@ -196,9 +200,4 @@ public class BookingSpotController {
 
         return response;
     }
-
-
-
-
-
 }

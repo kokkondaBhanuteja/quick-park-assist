@@ -238,7 +238,33 @@ class BookingSpotControllerTest {
         verify(redirectAttributes).addFlashAttribute("errorMessage", "Please provide a valid duration.");
         assertEquals("redirect:/bookingSpot/", result);
     }
-    
+    @Test
+    void testSubmitBookingSpotForm_SpotIdIsNull() {
+        Long spotId = null;
+        String spotLocation = "Central";
+        BookingSpot bookingSpot = new BookingSpot();
+        bookingSpot.setDuration(2.2);
+        bookingSpot.setStartTime(new Date(System.currentTimeMillis() + 3600 * 1000)); // Future time
+
+        User user = new User();
+        user.setId(1L);
+        user.setPhoneNumber("1234567890");
+
+        ParkingSpot parkingSpot = new ParkingSpot();
+        parkingSpot.setId(spotId);
+        parkingSpot.setLocation(spotLocation);
+
+        when(session.getAttribute("userId")).thenReturn(user.getId());
+        when(userRepository.findById(user.getId())).thenReturn(Optional.of(user));
+        when(parkingSpotRepository.findById(spotId)).thenReturn(Optional.of(parkingSpot));
+        when(bookingSpotService.checkIfPreviouslyBooked(user.getId(), spotId, bookingSpot.getStartTime())).thenReturn(true);
+
+        String result = bookingSpotController.submitBookingSpotForm(spotId, spotLocation, redirectAttributes, bookingSpot, session);
+
+        verify(redirectAttributes).addFlashAttribute("errorMessage", "Parking spot not found.");
+        assertEquals("redirect:/bookingSpot/", result);
+    }
+
     @Test
     void testSubmitBookingSpotForm_parkingSpotOptional_isempty() {
         Long spotId = 1L;
