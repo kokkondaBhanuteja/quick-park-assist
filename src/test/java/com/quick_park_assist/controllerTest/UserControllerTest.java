@@ -24,6 +24,7 @@ import java.util.Optional;
 
 import static com.quick_park_assist.controller.UserController.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
@@ -1102,6 +1103,24 @@ class UserControllerTest {
         verify(bindingResult).rejectValue("password", "weak Password",
                 "Password must be at least 6 characters and contain at least one letter, one number, and one special character");
     }
+    @Test
+    void testRegisterUser_ValidPassword() {
+        // Arrange
+        UserRegistrationDTO userDTO = createUserDTO();
+        userDTO.setPassword("Password@1");  // Valid password
+        when(bindingResult.hasErrors()).thenReturn(false);
+        when(userService.isEmailTaken(userDTO.getEmail())).thenReturn(false);
+        when(userService.isPhoneNumberTaken(userDTO.getPhoneNumber())).thenReturn(false);
+
+        // Act
+        String result = userController.registerUser(userDTO, bindingResult, session, model);
+
+        // Assert
+        assertNotEquals("registration", result, "Should proceed with registration since the password is valid.");
+        verify(bindingResult, never()).rejectValue("password", "weak Password",
+                "Password must be at least 6 characters and contain at least one letter, one number, and one special character");
+    }
+
 
     private UserRegistrationDTO createUserDTO() {
         UserRegistrationDTO userDTO = new UserRegistrationDTO();
