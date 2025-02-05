@@ -169,7 +169,7 @@ Start SonarQube Server:
 
 **Access SonarQube Dashboard:**
 Open http://localhost:9000 and check your project’s analysis.
-![Sonar](./images/sonar.jpeg)
+![Sonar](./images/sonar.png)
 
 **Swagger-UI Integration**
 
@@ -339,7 +339,7 @@ splunk.hec.token=your-hec-token
 ***Prometheus and Graphana Integration***
 -   After running the Open graphana Dashboard and import a readymade JSON file for springBoot and use prometheus as a data-source.
 - After that we can see a springBoot Dashboard which looks like this:
-![Project DashBoard](./images/projectDasboard.png)
+![Project DashBoard](./images/projectDashboard.png)
 
 ## Future Enhancements
 - Implement AI-based dynamic pricing for parking spots.
