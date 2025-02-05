@@ -10,10 +10,10 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @Transactional
 public interface IUserService {
-    User registerUser(UserRegistrationDTO registrationDTO) throws UserServiceImpl.PasswordHashingException;
+    User registerUser(UserRegistrationDTO registrationDTO) ;
     boolean isEmailTaken(String email);
     boolean isPhoneNumberTaken(String phoneNumber);
-    User authenticateUser(String email, String password) throws UserServiceImpl.PasswordHashingException;  // Changed return type to User
+    User authenticateUser(String email, String password) ;  // Changed return type to User
 
     User getUserById(Long id);
     void updateProfile(Long userId, UserProfileDTO profileDTO);

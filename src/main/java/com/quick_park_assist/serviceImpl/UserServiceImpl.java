@@ -10,11 +10,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
+
 import java.time.LocalDateTime;
-import java.util.Base64;
 import java.util.Optional;
 
 @Service
@@ -39,7 +36,7 @@ public class UserServiceImpl implements IUserService {
     private final Logger log = LoggerFactory.getLogger(UserServiceImpl.class);
 
     @Override
-    public User registerUser(UserRegistrationDTO dto) throws PasswordHashingException {
+    public User registerUser(UserRegistrationDTO dto) {
         User user = new User();
         // Set all fields explicitly
         user.setFullName(dto.getFullName().trim());
@@ -68,14 +65,13 @@ public class UserServiceImpl implements IUserService {
     }
 
     @Override
-    public User authenticateUser(String email, String password) throws PasswordHashingException {
+    public User authenticateUser(String email, String password) {
         Optional<User> userOptional = userRepository.findByEmail(email);
 
         if (userOptional.isPresent()) {
             User user = userOptional.get();
-            String hashedInputPassword = hashPassword(password);
 
-            if (password.equals(user.getPassword()) || hashedInputPassword.equals(user.getPassword()) ) {
+            if (password.equals(user.getPassword())) {
                 return user;
             }
         }
@@ -123,34 +119,6 @@ public class UserServiceImpl implements IUserService {
         // Finally, delete user after all related records are removed
         userRepository.deleteById(userId);
     }
-    /**
-     * Hashes the provided password using SHA-256 and returns the hashed value.
-     *
-     * @param password The password to be hashed
-     * @return The hashed password as a Base64-encoded string
-     * @throws PasswordHashingException if hashing fails
-     */
-    public String hashPassword(String password) throws PasswordHashingException {
-        try {
-            // Use "INVALID_ALGO" for testing to force NoSuchAlgorithmException
-            MessageDigest digest = MessageDigest.getInstance("SHA-256");
-            byte[] hash = digest.digest(password.getBytes(StandardCharsets.UTF_8));
-            return Base64.getEncoder().encodeToString(hash);
-        } catch (NoSuchAlgorithmException e) {
-            throw new PasswordHashingException("Error hashing password", e);
-        }
-    }
-
-
-    /**
-     * Custom exception for password hashing errors.
-     */
-    public static class PasswordHashingException extends Exception {
-        public PasswordHashingException(String message, Throwable cause) {
-            super(message, cause);
-        }
-    }
-
 
     @Override
     public void reactivateAccount(String email) {

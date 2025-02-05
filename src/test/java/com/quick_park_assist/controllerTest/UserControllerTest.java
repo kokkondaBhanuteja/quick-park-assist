@@ -93,7 +93,7 @@ class UserControllerTest {
     }
 
     @Test
-    void testRegisterUser_ValidationErrors() throws UserServiceImpl.PasswordHashingException {
+    void testRegisterUser_ValidationErrors() {
         // Arrange
         UserRegistrationDTO userDTO = new UserRegistrationDTO();
         when(bindingResult.hasErrors()).thenReturn(true);
@@ -107,7 +107,7 @@ class UserControllerTest {
     }
 
     @Test
-    void testAuthenticateUser_Success() throws UserServiceImpl.PasswordHashingException {
+    void testAuthenticateUser_Success() {
         String email = "test@example.com";
         String password = "Test@123";
         User user = new User();
@@ -124,7 +124,7 @@ class UserControllerTest {
     }
 
     @Test
-    void testAuthenticateUser_Failure() throws UserServiceImpl.PasswordHashingException {
+    void testAuthenticateUser_Failure() {
         // Arrange
         String email = "test@example.com";
         String password = "wrongpassword";
@@ -323,7 +323,7 @@ class UserControllerTest {
 
         // Test Case: verifyRegistration(...)
         @Test
-         void testVerifyRegistration_SuccessfulVerification() throws UserServiceImpl.PasswordHashingException {
+         void testVerifyRegistration_SuccessfulVerification() {
             // Mock session attributes
             when(session.getAttribute(PENDING_REGISTRATION)).thenReturn(mockUserDTO);
             when(registrationOTPService.verifyRegistrationOTP("test@example.com", "123456")).thenReturn(true);
@@ -342,7 +342,7 @@ class UserControllerTest {
 
 
     @Test
-        void testVerifyRegistration_InvalidOTP() throws UserServiceImpl.PasswordHashingException {
+        void testVerifyRegistration_InvalidOTP()  {
             UserRegistrationDTO userDTO = new UserRegistrationDTO();
             userDTO.setEmail("test@example.com");
             when(session.getAttribute("pendingRegistration")).thenReturn(userDTO);
@@ -386,7 +386,7 @@ class UserControllerTest {
         }
 
     @Test
-     void testVerifyRegistration_SessionExpired() throws UserServiceImpl.PasswordHashingException {
+     void testVerifyRegistration_SessionExpired(){
         // Mock session attributes
         when(session.getAttribute(PENDING_REGISTRATION)).thenReturn(null);
 
@@ -399,7 +399,7 @@ class UserControllerTest {
     }
 
     @Test
-     void testVerifyRegistration_FirstOTPFails() throws UserServiceImpl.PasswordHashingException {
+     void testVerifyRegistration_FirstOTPFails() {
         // Mock session attributes
         when(session.getAttribute(PENDING_REGISTRATION)).thenReturn(mockUserDTO);
         when(session.getAttribute(OTP_ATTEMPTS)).thenReturn(null);
@@ -416,7 +416,7 @@ class UserControllerTest {
     }
 
     @Test
-     void testVerifyRegistration_MaximumAttemptsExceeded() throws UserServiceImpl.PasswordHashingException {
+     void testVerifyRegistration_MaximumAttemptsExceeded() {
         // Mock session attributes
         when(session.getAttribute(PENDING_REGISTRATION)).thenReturn(mockUserDTO);
         when(session.getAttribute(OTP_ATTEMPTS)).thenReturn(2);
@@ -433,7 +433,7 @@ class UserControllerTest {
     }
 
     @Test
-     void testVerifyRegistration_SecondOTPFails() throws UserServiceImpl.PasswordHashingException {
+     void testVerifyRegistration_SecondOTPFails()  {
         // Mock session attributes
         when(session.getAttribute(PENDING_REGISTRATION)).thenReturn(mockUserDTO);
         when(session.getAttribute(OTP_ATTEMPTS)).thenReturn(1);
@@ -548,16 +548,21 @@ class UserControllerTest {
         verify(otpService).sendReactivationOTP(inactiveUser);
     }
     @Test
-    void testLogin_Exception() throws UserServiceImpl.PasswordHashingException {
-        // Arrange
-        String email = "unknown@example.com";
-        String password = "password";
-        when(userService.authenticateUser(email, password)).thenThrow(new UserServiceImpl.PasswordHashingException("error",new Throwable("testCause")));
+     void testLoginUserException() {
+        session = mock(HttpSession.class);
+        redirectAttributes = mock(RedirectAttributes.class);
 
-        String result = userController.loginUser(email,password,session, redirectAttributes);
+        // Simulate exception thrown by userService.authenticateUser()
+        when(userService.authenticateUser(anyString(), anyString())).thenThrow(new RuntimeException("Database connection error"));
 
+        // Call the method
+        String result = userController.loginUser("test@example.com", "password", session, redirectAttributes);
+
+        // Assertions
         assertEquals("redirect:/login?error", result);
-        verify(redirectAttributes).addFlashAttribute(ERROR_MESSAGE, "An error occurred during login");
+        verify(redirectAttributes).addFlashAttribute("errorMessage", "An error occurred during login");
+
+        // Verify logs or additional behaviors if required
     }
 
     @Test
@@ -931,7 +936,7 @@ class UserControllerTest {
     }
 
     @Test
-    void testLoginUser_SessionAttributeVerification() throws UserServiceImpl.PasswordHashingException {
+    void testLoginUser_SessionAttributeVerification() {
         User user = new User();
         user.setId(1L);
         user.setEmail("test@example.com");

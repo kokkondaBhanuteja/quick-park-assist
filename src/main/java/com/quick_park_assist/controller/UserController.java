@@ -136,7 +136,7 @@ public class UserController {
                                      @RequestParam String otp,
                                      HttpSession session,
                                      Model model,
-                                     RedirectAttributes redirectAttributes) throws UserServiceImpl.PasswordHashingException {
+                                     RedirectAttributes redirectAttributes) {
 
         UserRegistrationDTO userDTO = (UserRegistrationDTO) session.getAttribute(PENDING_REGISTRATION);
 
@@ -298,7 +298,7 @@ public class UserController {
                 redirectAttributes.addFlashAttribute(ERROR_MESSAGE, "Invalid email or password");
                 return "redirect:/login?error";
             }
-        } catch (UserServiceImpl.PasswordHashingException e) {
+        } catch (Exception e) {
             // Add debug log for exceptions
             log.error("Login error: {}" , e.getMessage());
 

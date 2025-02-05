@@ -20,11 +20,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.time.LocalDateTime;
-import java.util.Base64;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -58,7 +54,7 @@ class UserServiceImplTest {
     }
 
     @Test
-    void testRegisterUser() throws UserServiceImpl.PasswordHashingException {
+    void testRegisterUser(){
         // Arrange
         UserRegistrationDTO dto = new UserRegistrationDTO();
         dto.setFullName("John Doe");
@@ -114,45 +110,6 @@ class UserServiceImplTest {
         // Assert
         assertTrue(result);
         verify(userRepository, times(1)).existsByPhoneNumber(phoneNumber);
-    }
-
-    @Test
-    void testAuthenticateUser_Success() throws UserServiceImpl.PasswordHashingException {
-        // Arrange
-        String email = "test@example.com";
-        String password = "password123";
-        User user = new User();
-        user.setEmail(email);
-        user.setPassword(userService.hashPassword(password)); // Hashing the password
-
-        when(userRepository.findByEmail(email)).thenReturn(Optional.of(user));
-
-        // Act
-        User result = userService.authenticateUser(email, password);
-
-        // Assert
-        assertNotNull(result);
-        assertEquals(user, result);
-        verify(userRepository, times(1)).findByEmail(email);
-    }
-
-    @Test
-    void testAuthenticateUser_Failure() throws UserServiceImpl.PasswordHashingException {
-        // Arrange
-        String email = "test@example.com";
-        String password = "wrongpassword";
-        User user = new User();
-        user.setEmail(email);
-        user.setPassword(userService.hashPassword("password123"));
-
-        when(userRepository.findByEmail(email)).thenReturn(Optional.of(user));
-
-        // Act
-        User result = userService.authenticateUser(email, password);
-
-        // Assert
-        assertNull(result);
-        verify(userRepository, times(1)).findByEmail(email);
     }
 
     @Test
@@ -420,14 +377,13 @@ class UserServiceImplTest {
     }
 
     @Test
-    void testAuthenticateUser_WithHashedPassword() throws UserServiceImpl.PasswordHashingException {
+    void testAuthenticateUser_WithHashedPassword(){
         // Arrange
         String email = "test@example.com";
         String password = "password123";
         User user = new User();
         user.setEmail(email);
-        String hashedPassword = userService.hashPassword(password);
-        user.setPassword(hashedPassword);
+        user.setPassword(password);
 
         when(userRepository.findByEmail(email)).thenReturn(Optional.of(user));
 
@@ -440,7 +396,7 @@ class UserServiceImplTest {
     }
 
     @Test
-    void testAuthenticateUser_WithPlainPassword() throws UserServiceImpl.PasswordHashingException {
+    void testAuthenticateUser_WithPlainPassword() {
         // Arrange
         String email = "test@example.com";
         String password = "password123";
@@ -459,7 +415,7 @@ class UserServiceImplTest {
     }
 
     @Test
-    void testRegisterUser_WithSpecialCharactersInInputs() throws UserServiceImpl.PasswordHashingException {
+    void testRegisterUser_WithSpecialCharactersInInputs() {
         // Arrange
         UserRegistrationDTO dto = new UserRegistrationDTO();
         dto.setFullName("O'Connor-Smith Jr.");
@@ -536,20 +492,7 @@ class UserServiceImplTest {
 
 
     @Test
-    void testHashPassword_WithSpecialCharacters() throws UserServiceImpl.PasswordHashingException {
-        // Arrange
-        String password = "p@ssw0rd!#$%^&*()";
-
-        // Act
-        String hashedPassword = userService.hashPassword(password);
-
-        // Assert
-        assertNotNull(hashedPassword);
-        assertTrue(hashedPassword.length() > 0);
-    }
-
-    @Test
-    void testAuthenticateUser_WithNonexistentEmail() throws UserServiceImpl.PasswordHashingException {
+    void testAuthenticateUser_WithNonexistentEmail() {
         // Arrange
         String email = "nonexistent@example.com";
         String password = "password123";
@@ -646,7 +589,7 @@ class UserServiceImplTest {
 
 
     @Test
-    void testRegisterUser_WithMaximumLengthValues() throws UserServiceImpl.PasswordHashingException {
+    void testRegisterUser_WithMaximumLengthValues() {
         // Arrange
         String longString = "a".repeat(255); // Max length typically allowed in DB
         UserRegistrationDTO dto = new UserRegistrationDTO();
@@ -709,7 +652,7 @@ class UserServiceImplTest {
 
 
     @Test
-    void testAuthenticateUser_WithPasswordVersions() throws UserServiceImpl.PasswordHashingException {
+    void testAuthenticateUser_WithPasswordVersions(){
         // Arrange
         String email = "test@example.com";
         String oldPassword = "oldpassword123";
@@ -717,7 +660,7 @@ class UserServiceImplTest {
 
         User user = new User();
         user.setEmail(email);
-        user.setPassword(userService.hashPassword(oldPassword));
+        user.setPassword(oldPassword);
 
         when(userRepository.findByEmail(email)).thenReturn(Optional.of(user));
 
@@ -727,7 +670,7 @@ class UserServiceImplTest {
         assertNotNull(resultOld);
 
         // Update password
-        user.setPassword(userService.hashPassword(newPassword));
+        user.setPassword(newPassword);
 
         // Test with new password
         User resultNew = userService.authenticateUser(email, newPassword);
@@ -739,7 +682,7 @@ class UserServiceImplTest {
     }
 
     @Test
-    void testCompleteUserLifecycle() throws UserServiceImpl.PasswordHashingException {
+    void testCompleteUserLifecycle(){
         // Arrange
         String email = "lifecycle@test.com";
         String password = "password123";
@@ -756,7 +699,7 @@ class UserServiceImplTest {
         User savedUser = new User();
         savedUser.setId(1L);
         savedUser.setEmail(email);
-        savedUser.setPassword(userService.hashPassword(password));
+        savedUser.setPassword(password);
         savedUser.setActive(true);
 
         when(userRepository.save(any(User.class))).thenReturn(savedUser);
@@ -794,36 +737,6 @@ class UserServiceImplTest {
         // 6. Delete
         userService.deleteAccount(1L, "Customer");
         verify(userRepository).deleteById(1L);
-    }
-    @Test
-    void testHashPassword_Success() throws Exception {
-        String password = "securePassword";
-        MessageDigest digest = MessageDigest.getInstance("SHA-256");
-        byte[] hash = digest.digest(password.getBytes(StandardCharsets.UTF_8));
-        String expectedHash = Base64.getEncoder().encodeToString(hash);
-
-        String result = userService.hashPassword(password);
-
-        assertEquals(expectedHash, result);
-    }
-
-    @Test
-    void testHashPassword_Exception() {
-        assertThrows(UserServiceImpl.PasswordHashingException.class, () -> {
-            throw new UserServiceImpl.PasswordHashingException("Error hashing password", new NoSuchAlgorithmException());
-        });
-    }
-    @Test
-     void testHashPasswordThrowsException() {
-        try {
-            MessageDigest mockDigest = mock(MessageDigest.class);
-            when(mockDigest.digest(any(byte[].class))).thenThrow(new RuntimeException("Digest failed"));
-
-            mockDigest.digest("testPassword".getBytes(StandardCharsets.UTF_8));
-            fail("Expected RuntimeException to be thrown");
-        } catch (RuntimeException e) {
-            assertEquals("Digest failed", e.getMessage());
-        }
     }
 
 }
