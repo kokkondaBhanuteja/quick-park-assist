@@ -23,8 +23,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import java.util.Optional;
 
 import static com.quick_park_assist.controller.UserController.*;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
@@ -1127,6 +1126,22 @@ class UserControllerTest {
     }
 
 
+    @Test
+    public void testOtpResendTooSoon() {
+        HttpSession session = mock(HttpSession.class);
+        UserRegistrationDTO userDTO = createUserDTO();
+        userDTO.setPassword("Password@1");
+        when(session.getAttribute("pendingRegistration")).thenReturn(userDTO);
+        // Mock the session to return a lastResendTime of 5 seconds ago (less than 30 seconds)
+        long fiveSecondsAgo = System.currentTimeMillis() - 5000;
+        when(session.getAttribute("lastOtpResendTime")).thenReturn(fiveSecondsAgo);
+
+        String result = userController.resendOTP(session,model,redirectAttributes);
+
+        // Assertion: timeElapsed < 30000 should return true
+        assertEquals("registration-verify",result, "OtpResendTooSoon should return true for timeElapsed < 30000 milliseconds");
+        verify(model).addAttribute("errorMessage","Please wait before requesting a new code");
+    }
     private UserRegistrationDTO createUserDTO() {
         UserRegistrationDTO userDTO = new UserRegistrationDTO();
         userDTO.setEmail("test@example.com");
