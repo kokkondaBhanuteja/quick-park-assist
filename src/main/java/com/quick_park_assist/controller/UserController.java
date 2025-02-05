@@ -164,7 +164,7 @@ public class UserController {
             // Clean up session
             session.removeAttribute(PENDING_REGISTRATION);
             session.removeAttribute(OTP_ATTEMPTS);
-
+            redirectAttributes.addFlashAttribute(SUCCESS_MESSAGE,"Registration Successful! Please Login.");
             return REDIRECT_LOGIN;
         } else {
             // Increment attempts counter

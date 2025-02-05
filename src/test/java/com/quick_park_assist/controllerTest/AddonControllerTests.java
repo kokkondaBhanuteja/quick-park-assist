@@ -303,6 +303,16 @@ import static org.mockito.Mockito.*;
         assertEquals("redirect:/addon/new", result);
         verify(redirectAttributes).addFlashAttribute("errorMessage", "Service  not Found Please Try Again!");
     }
+    @Test
+    public void testSaveAddon_ServiceIdNegative_ShouldRedirectWithError() {
+        when(session.getAttribute("userId")).thenReturn(1L);
+        AddonService addonService = new AddonService();
+        addonService.setDuration("10"); // Valid duration
+        addonService.setName("Test Service"); // Valid name
+        String result = addonController.saveAddon(addonService, -111L, session, redirectAttributes);
+        assertEquals("redirect:/addon/new", result);
+        verify(redirectAttributes).addFlashAttribute("errorMessage", "Service  not Found Please Try Again!");
+    }
 
     @Test
     public void testSaveAddon_ValidService_ShouldAddAddonAndRedirect() {

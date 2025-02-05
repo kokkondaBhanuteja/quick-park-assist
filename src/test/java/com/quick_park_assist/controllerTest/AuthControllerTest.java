@@ -20,7 +20,7 @@ import java.util.Optional;
 
 import static com.quick_park_assist.controller.AuthController.ERROR_MESSAGE;
 import static com.quick_park_assist.controller.AuthController.REDIRECT_AUTH_CHANGE_PASSWORD;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
@@ -261,6 +261,16 @@ class AuthControllerTest {
         verify(redirectAttributes).addFlashAttribute("errorMessage", "Email is missing. Please retry the process.");
     }
     @Test
+    void testResetPassword_EmptyEmail() {
+        String newPassword = "NewPass@123";
+        String confirmPassword = "NewPass@123";
+
+        String viewName = authController.resetPassword("", newPassword, confirmPassword, redirectAttributes);
+
+        assertEquals("redirect:/auth/resetPassword", viewName);
+        verify(redirectAttributes).addFlashAttribute("errorMessage", "Email is missing. Please retry the process.");
+    }
+    @Test
     void testResetPassword_ResetFailed() {
         String email = "test@example.com";
         String newPassword = "NewPass@123";
@@ -310,7 +320,22 @@ class AuthControllerTest {
     }
     @Test
     void testShowResetPasswordForm_MissingEmail() {
+        String viewName = authController.showResetPasswordForm("Test@example.com", model, redirectAttributes);
+
+        assertEquals("newPassword", viewName);
+        verify(model).addAttribute("email", "Test@example.com");
+    }
+    @Test
+    void testShowResetPasswordForm() {
         String viewName = authController.showResetPasswordForm(null, model, redirectAttributes);
+
+        assertEquals("redirect:/auth/forgot", viewName);
+
+        verify(redirectAttributes).addFlashAttribute("errorMessage", "Email is missing. Please restart the process.");
+    }
+    @Test
+    void testShowResetPasswordForm_EmptyEmail() {
+        String viewName = authController.showResetPasswordForm("", model, redirectAttributes);
 
         assertEquals("redirect:/auth/forgot", viewName);
         verify(redirectAttributes).addFlashAttribute("errorMessage", "Email is missing. Please restart the process.");
@@ -438,6 +463,36 @@ class AuthControllerTest {
         verify(redirectAttributes).addFlashAttribute(ERROR_MESSAGE,
                 "Password must be at least 6 characters and contain at least one letter, one number, and one special character");
     }
-    // Test case: Successful password change
+    @Test
+    public void testLastOtpResendTimeNotSet() {
+        HttpSession session = Mockito.mock(HttpSession.class);
+        Mockito.when(session.getAttribute("lastOtpResendTime")).thenReturn(null);
+
+        assertFalse(authController.isOtpResendTooSoon(session));
+    }
+
+    @Test
+    public void testOtpResendAfter30Seconds() {
+        HttpSession session = Mockito.mock(HttpSession.class);
+        Mockito.when(session.getAttribute("lastOtpResendTime")).thenReturn(System.currentTimeMillis() - 31000);
+
+        assertFalse(authController.isOtpResendTooSoon(session));
+    }
+
+    @Test
+    public void testOtpResendWithin30Seconds() {
+        HttpSession session = Mockito.mock(HttpSession.class);
+        Mockito.when(session.getAttribute("lastOtpResendTime")).thenReturn(System.currentTimeMillis() - 20000);
+
+        assertTrue(authController.isOtpResendTooSoon(session));
+    }
+
+    @Test
+    public void testOtpResendExactlyAfter30Seconds() {
+        HttpSession session = Mockito.mock(HttpSession.class);
+        Mockito.when(session.getAttribute("lastOtpResendTime")).thenReturn(System.currentTimeMillis() - 30000);
+
+        assertFalse(authController.isOtpResendTooSoon(session));
+    }
 
 }
