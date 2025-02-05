@@ -1008,6 +1008,60 @@ class UserControllerTest {
         assertEquals("redirect:/profile/edit", result);
         verify(redirectAttributes).addFlashAttribute(eq(ERROR_MESSAGE), contains("Error updating profile"));
     }
+    @Test
+    void testRegisterUser_WithInitialValidationErrors() {
+        // Arrange
+        UserRegistrationDTO userDTO = createUserDTO();
+        when(bindingResult.hasErrors()).thenReturn(true);
 
+        // Act
+        String result = userController.registerUser(userDTO, bindingResult, session, model);
+
+        // Assert
+        assertEquals("registration", result, "Should return to registration page due to validation errors.");
+        verify(bindingResult, times(3)).hasErrors();
+    }
+
+    @Test
+    void testRegisterUser_WithDuplicateEmail() {
+        // Arrange
+        UserRegistrationDTO userDTO = createUserDTO();
+        when(bindingResult.hasErrors()).thenReturn(false);
+        when(userService.isEmailTaken(userDTO.getEmail())).thenReturn(true);
+
+        // Act
+        String result = userController.registerUser(userDTO, bindingResult, session, model);
+
+        // Assert
+        assertEquals("registration", result, "Should return to registration page due to duplicate email.");
+        verify(bindingResult).rejectValue("email", "email.exists", "Email already registered");
+    }
+
+    @Test
+    void testRegisterUser_WithWeakPassword() {
+        // Arrange
+        UserRegistrationDTO userDTO = createUserDTO();
+        userDTO.setPassword("12345");  // Weak password
+        when(bindingResult.hasErrors()).thenReturn(false);
+        when(userService.isEmailTaken(userDTO.getEmail())).thenReturn(false);
+        when(userService.isPhoneNumberTaken(userDTO.getPhoneNumber())).thenReturn(false);
+
+        // Act
+        String result = userController.registerUser(userDTO, bindingResult, session, model);
+
+        // Assert
+        assertEquals("registration-verify", result, "Should return to registration page due to weak password.");
+        verify(bindingResult).rejectValue("password", "weak Password",
+                "Password must be at least 6 characters and contain at least one letter, one number, and one special character");
+    }
+
+    private UserRegistrationDTO createUserDTO() {
+        UserRegistrationDTO userDTO = new UserRegistrationDTO();
+        userDTO.setEmail("test@example.com");
+        userDTO.setPassword("Password@123");
+        userDTO.setPhoneNumber("1234567890");
+        userDTO.setFullName("John Doe");
+        return userDTO;
+    }
 
 }

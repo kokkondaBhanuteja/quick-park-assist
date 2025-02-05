@@ -582,6 +582,22 @@ public class ParkingSpotUnitTest {
         verify(redirectAttributes).addFlashAttribute("errorMessage", "Please enter a location to search.");
         assertEquals("SearchParkingSpot", result, "Expected to return the search page when location is not provided.");
     }
+    @Test
+    void testSearchLocations_LocationNull() {
+        // Arrange
+        String query = null;
+        when(parkingSpotRepository.findByAvailabilityIgnoreCaseAndSpotLocationContainingIgnoreCaseOrLocationContainingIgnoreCase(
+                anyString(), eq(query), eq(query)))
+                .thenReturn(new ArrayList<>());
+
+        // Act
+        when(session.getAttribute("userId")).thenReturn(1L);
+        String result = parkingSpotController.showSearchParkingSpotsForm( query,"available",model,session,redirectAttributes);
+
+        // Assert
+        verify(redirectAttributes).addFlashAttribute("errorMessage", "Please enter a location to search.");
+        assertEquals("SearchParkingSpot", result, "Expected to return the search page when location is not provided.");
+    }
 
     @Test
     void testSearchLocations_AvailabilityAll() {

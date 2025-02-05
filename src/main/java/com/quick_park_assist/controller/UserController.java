@@ -87,11 +87,7 @@ public class UserController {
 
             // Log validation state before custom validation
             log.info("Initial validation errors: {}", result.hasErrors());
-            if (result.hasErrors()) {
-                result.getAllErrors().forEach(error ->
-                        log.info("Validation error: {}", error.getDefaultMessage())
-                );
-            }
+
 
             // Custom password match validation
             passwordMatchValidator.validate(userDTO, result);
@@ -101,6 +97,9 @@ public class UserController {
             log.info("Validation errors after password check: {}", result.hasErrors());
 
             if (result.hasErrors()) {
+                result.getAllErrors().forEach(error ->
+                        log.info("Validation error: {}", error.getDefaultMessage())
+                );
                 return REGISTRATION;
             }
 

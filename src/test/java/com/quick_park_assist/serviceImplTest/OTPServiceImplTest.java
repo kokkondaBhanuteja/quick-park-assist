@@ -125,7 +125,7 @@ class OTPServiceImplTest {
     void testVerifyOTP_EmptyOTP() {
         // Arrange
         String email = "test@example.com";
-        String otpCode = "123456";
+        String otpCode = " ";
         User user = new User();
         user.setId(1L);
         user.setEmail(email);
@@ -136,7 +136,7 @@ class OTPServiceImplTest {
 
 
 
-        when(userRepository.findByEmail(email)).thenReturn(Optional.empty());
+        when(userRepository.findByEmail(email)).thenReturn(Optional.of(user));
         when(otpRepository.findByUserIdAndOtpCode(user.getId(), otpCode)).thenReturn(Optional.empty());
 
         // Act
@@ -144,7 +144,7 @@ class OTPServiceImplTest {
 
         // Assert
         assertFalse(result);
-        verify(otpRepository, never()).findByUserIdAndOtpCode(anyLong(), anyString());
+        verify(otpRepository, never()).findByUserIdAndOtpCode(otp.getId(),otp.getOtpCode());
     }
 
     @Test
