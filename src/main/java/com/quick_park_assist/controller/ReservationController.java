@@ -69,7 +69,7 @@ public class ReservationController {
         }
         if (vehicleRepository.existsElectricVehicleByUserId(loggedInUser)) {
             // Fetch EV spots
-            List<ParkingSpot> evSpots = parkingSpotRepository.findBySpotType("EV_SPOT");
+            List<ParkingSpot> evSpots = parkingSpotRepository.findBySpotTypeContainingIgnoreCase("EV_SPOT");
             if (evSpots.isEmpty()) {
                 log.info("No EV parking spots available.");
             }

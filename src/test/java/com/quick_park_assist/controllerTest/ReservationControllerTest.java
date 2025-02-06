@@ -324,7 +324,7 @@ class ReservationControllerTest {
         when(session.getAttribute(ReservationController.USER_ID)).thenReturn(USER_ID);
         when(vehicleRepository.existsElectricVehicleByUserId(USER_ID)).thenReturn(true);
         
-        when(parkingSpotRepository.findBySpotType("EV_SPOT")).thenReturn(Collections.emptyList());
+        when(parkingSpotRepository.findBySpotTypeContainingIgnoreCase("EV_SPOT")).thenReturn(Collections.emptyList());
 
         // Act
         String result = reservationController.addReservationForm(session, model, redirectAttributes);
@@ -442,7 +442,7 @@ class ReservationControllerTest {
         // Arrange
         when(session.getAttribute(ReservationController.USER_ID)).thenReturn(USER_ID);
         when(vehicleRepository.existsElectricVehicleByUserId(USER_ID)).thenReturn(true);
-        when(parkingSpotRepository.findBySpotType("EV_SPOT")).thenReturn(Collections.emptyList()); // No EV spots available
+        when(parkingSpotRepository.findBySpotTypeContainingIgnoreCase("EV_SPOT")).thenReturn(Collections.emptyList()); // No EV spots available
 
         // Act
         String result = reservationController.addReservationForm(session, model, redirectAttributes);
@@ -457,7 +457,7 @@ class ReservationControllerTest {
         // Arrange
         when(session.getAttribute(ReservationController.USER_ID)).thenReturn(USER_ID);
         when(vehicleRepository.existsElectricVehicleByUserId(USER_ID)).thenReturn(true);
-        when(parkingSpotRepository.findBySpotType("EV_SPOT")).thenReturn(Arrays.asList(new ParkingSpot())); // Mock EV spots
+        when(parkingSpotRepository.findBySpotTypeContainingIgnoreCase("EV_SPOT")).thenReturn(Arrays.asList(new ParkingSpot())); // Mock EV spots
         when(vehicleRepository.findEVVehicles(USER_ID)).thenReturn(Arrays.asList("EV123", "EV456")); // Mock multiple EV vehicles
 
         // Act

@@ -32,7 +32,7 @@ public interface ParkingSpotRepository extends JpaRepository<ParkingSpot, Long> 
     List<ParkingSpot> findByAvailabilityIgnoreCaseAndSpotLocationContainingIgnoreCaseOrLocationContainingIgnoreCaseAndSpotType(
             String availability, String spotLocation, String location, String spotType);
 
-    List<ParkingSpot> findBySpotType(String evSpot);
+    List<ParkingSpot> findBySpotTypeContainingIgnoreCase(String evSpot);
 
 
     @Query("SELECT new map(p.id as id, p.spotLocation as spotName, p.spotType as spotType, p.location as Location, p.pricePerHour as pricePerHour) " +
