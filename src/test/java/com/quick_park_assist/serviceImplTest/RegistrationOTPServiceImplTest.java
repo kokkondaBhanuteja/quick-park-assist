@@ -1,4 +1,4 @@
-package com.quick_park_assist.ServiceTest;
+package com.quick_park_assist.serviceImplTest;
 
 import com.quick_park_assist.entity.OTP;
 import com.quick_park_assist.repository.OTPRepository;
