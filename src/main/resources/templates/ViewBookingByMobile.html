@@ -63,10 +63,9 @@
     </div>
     <!-- Form Section-->
     <div class="col-md-9 bg-light formSection">
-      <h3 class="text-center bg-primary text-light" style="padding:10px; border-radius:5px">View Booking By Mobile</h3>
+      <h3 class="text-center bg-primary text-light" style="padding:10px; border-radius:5px">View My Booking's</h3>
       <form th:action="@{/viewBookingByMobile/viewbooking-mobile}" method="post" class="mt-4">
       <div th:if="${bookings}" class="mt-5">
-        <h3 class="text-center">Your Booking Details</h3>
         <div th:if="${successMessage}" class="alert alert-success" th:text="${successMessage}"></div>
         <div th:if="${errorMessage}" class="alert alert-danger" th:text="${errorMessage}"></div>
 
