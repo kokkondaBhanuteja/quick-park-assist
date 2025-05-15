@@ -2,6 +2,7 @@ package com.quick_park_assist.controller;
 
 import com.quick_park_assist.entity.ParkingSpot;
 import com.quick_park_assist.entity.User;
+import com.quick_park_assist.repository.BookingSpotRepository;
 import com.quick_park_assist.repository.ParkingSpotRepository;
 import com.quick_park_assist.repository.UserRepository;
 import com.quick_park_assist.service.IParkingSpotPriceService;
@@ -37,6 +38,8 @@ public class ParkingSpotController {
     public static final String PARKING_SPOTS = "parkingSpots";
     @Autowired
     private ParkingSpotRepository parkingSpotRepository;
+    @Autowired
+    private BookingSpotRepository bookingSpotRepository;
     @Autowired
     private IParkingSpotPriceService parkingSpotService;
     @Autowired
@@ -217,6 +220,7 @@ public class ParkingSpotController {
 
         Optional<ParkingSpot> parkingSpot = parkingSpotRepository.findById(id);
         if (parkingSpot.isPresent()) {
+            bookingSpotRepository.deleteByParkingSpotId(parkingSpot.get());
             parkingSpotRepository.delete(parkingSpot.get()); // Remove the parking spot from the database
             redirectAttributes.addFlashAttribute(SUCCESS_MESSAGE, "Parking spot removed successfully.");
         } else {

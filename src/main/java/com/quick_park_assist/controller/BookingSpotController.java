@@ -106,7 +106,7 @@ public class BookingSpotController {
     @Transactional
     @PostMapping("/book-spot/")
     public String submitBookingSpotForm(
-            @RequestParam(value = "spotId",required = false) Long spotId,
+            @RequestParam(value = "spotId",required = true) Long spotId,
             @RequestParam("spotLocation") String spotLocation,
             RedirectAttributes redirectAttributes,
             @ModelAttribute("bookingSpot") BookingSpot bookingSpot,

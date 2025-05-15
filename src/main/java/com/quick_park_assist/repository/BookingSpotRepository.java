@@ -6,14 +6,17 @@ import java.util.Map;
 import java.util.Optional;
 
 
+import com.quick_park_assist.entity.ParkingSpot;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 
 import com.quick_park_assist.enums.BookingSpotStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 @Repository
@@ -57,4 +60,9 @@ public interface BookingSpotRepository extends JpaRepository<BookingSpot, Long> 
     Double calculateTotalRevenueByOwner(@Param("ownerId") Long ownerId);
 
     void deleteAllByUserId(Long userId);
+    @Transactional
+    @Modifying
+    @Query("DELETE FROM BookingSpot b WHERE b.spotID = :spotId")
+    void deleteByParkingSpotId(@Param("spotId") ParkingSpot spotId);
+
 }
