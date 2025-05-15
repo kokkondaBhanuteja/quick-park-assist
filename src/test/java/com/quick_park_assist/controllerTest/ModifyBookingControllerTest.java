@@ -276,7 +276,7 @@ class ModifyBookingControllerTest {
         // Arrange
         Long bookingId = 1L;
         Long spotID = 1L;
-        String startTimeStr = "2025-02-25T10:00";
+        String startTimeStr = "3025-02-25T10:00";
         Double duration = 2.0;
 
         Date startTime = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm").parse(startTimeStr);
